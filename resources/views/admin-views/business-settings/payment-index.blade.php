@@ -87,9 +87,9 @@
             </div>
         </div>
 
-        {{--<div class="row digital_payment_methods mt-3 g-3">
+        <div class="row digital_payment_methods mt-3 g-3">
             <!-- This Design Will Implement On All Digital Payment Method Its an Static Design Card Start -->
-            @php($config=\App\CentralLogics\Helpers::get_business_settings('ssl_commerz_payment'))
+            {{--@php($config=\App\CentralLogics\Helpers::get_business_settings('ssl_commerz_payment'))
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
