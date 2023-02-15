@@ -121,7 +121,7 @@
                             <div>
                                 @php( $local = session()->has('local')?session('local'):'en')
                                 @php($lang = \App\Models\BusinessSetting::where('key', 'system_language')->first())
-                                @if ($lang)                                   
+                                @if ($lang)
                                 <div
                                     class="topbar-text dropdown disable-autohide text-capitalize d-flex">
                                     <a class="topbar-link dropdown-toggle d-flex align-items-center title-color"
@@ -129,7 +129,7 @@
                                     @foreach(json_decode($lang['value'],true) as $data)
                                     @if($data['code']==$local)
                                     <i class="tio-globe"></i>
-                                                {{-- <img 
+                                                {{-- <img
                                                      width="20"
                                                      src="{{asset('public/assets/admin')}}/img/flags/{{$data['code']}}.png"
                                                      alt="Eng"> --}}
@@ -144,7 +144,7 @@
                                                     <a class="dropdown-item py-1"
                                                        href="{{route('admin.lang',[$data['code']])}}">
                                                         {{-- <img
-                                                            
+
                                                             width="20"
                                                             src="{{asset('public/assets/admin')}}/img/flags/{{$data['code']}}.png"
                                                             alt="{{$data['code']}}"/> --}}
@@ -159,10 +159,10 @@
                             </div>
                         </div>
                     </li>
-                    @php($mod = \App\Models\Module::find(Config::get('module.current_module_id')))
+                    {{--@php($mod = \App\Models\Module::find(Config::get('module.current_module_id')))
                     <li class="nav-item __nav-item">
                         <a href="javascript:void(0)" class="__nav-link module--nav-icon" id="tourb-0">
-                            @if ($mod)   
+                            @if ($mod)
                             <img src="{{asset('storage/app/public/module')}}/{{$mod->icon}}" onerror="this.src='{{asset('/public/assets/admin/img/new-img/module-icon.svg')}}'" width="20px" alt="public/img">
                             @else
                             <img src="{{asset('/public/assets/admin/img/new-img/module-icon.svg')}}" alt="public/img">
@@ -183,11 +183,11 @@
                             </div>
                             <div class="__nav-module-body">
                                 <div class="__nav-module-items">
-                                    @foreach ($modules as $module)   
+                                    @foreach ($modules as $module)
                                         <a href="javascript:;" onclick="set_filter('{{route('admin.dashboard')}}','{{ $module->id }}','module_id')" class="__nav-module-item {{Config::get('module.current_module_id') == $module->id?'active':''}}">
                                             <div class="img">
                                                 <img src="{{asset('storage/app/public/module')}}/{{$module->icon}}"
-                                                onerror="this.src='{{asset('public/assets/admin/img/new-img/module/e-shop.svg')}}'" 
+                                                onerror="this.src='{{asset('public/assets/admin/img/new-img/module/e-shop.svg')}}'"
                                                 alt="new-img">
                                             </div>
                                             <div>
@@ -211,7 +211,7 @@
                             </div>
                             @endif
                         </div>
-                    </li>
+                    </li>--}}
                 </ul>
                 <!-- End Navbar -->
             </div>
