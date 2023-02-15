@@ -66,26 +66,26 @@
                             {{ translate('messages.methods') }}</span>
                     </a>
                 </li>
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/mail-config') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/mail-config') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.business-settings.mail-config') }}" title="{{ translate('messages.mail') }} {{ translate('messages.config') }}">
                         <span class="tio-email nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.mail') }}
                             {{ translate('messages.config') }}</span>
                     </a>
-                </li>
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/sms-module') ? 'active' : '' }}">
+                </li>--}}
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/sms-module') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.business-settings.sms-module') }}" title="{{ translate('messages.sms_system_module') }}">
                         <span class="tio-message nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.sms_system_module') }}</span>
                     </a>
-                </li>
+                </li>--}}
 
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/fcm-index') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/fcm-index') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.business-settings.fcm-index') }}" title="{{ translate('messages.notification_settings') }}">
                         <span class="tio-notifications nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.notification_settings') }}</span>
                     </a>
-                </li>
+                </li>--}}
 
                 @endif
                 <!-- End Business Settings -->
@@ -107,7 +107,7 @@
                 </li>
                 @endif
 
-                @if (\App\CentralLogics\Helpers::module_permission_check('module'))
+                {{--@if (\App\CentralLogics\Helpers::module_permission_check('module'))
                 <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/module') ? 'active' : '' }}">
                     <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" id="tourb-3" href="javascript:" title="{{ translate('messages.system_module_setup') }}">
                         <i class="tio-globe nav-icon"></i>
@@ -132,7 +132,7 @@
                         </li>
                     </ul>
                 </li>
-                @endif
+                @endif--}}
                 <!-- End module settings -->
 
                 <!-- web & adpp Settings -->
