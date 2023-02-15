@@ -48,7 +48,7 @@
                         </a>
                     </li>
                     <!-- End Dashboards -->
-                    
+
                     <!-- Marketing section -->
                     <li class="nav-item">
                         <small class="nav-subtitle" title="{{ translate('messages.employee_handle') }}">{{ translate('pos section') }}</small>
@@ -695,7 +695,7 @@
                     </a>
                 </li>
 
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/wallet*') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/wallet*') ? 'active' : '' }}">
 
                     <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:" title="{{ __('messages.customer_wallet') }}">
                         <i class="tio-wallet nav-icon"></i>
@@ -719,9 +719,9 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li>--}}
 
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/loyalty-point*') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/loyalty-point*') ? 'active' : '' }}">
                     <a class="js-navbar-vertical-aside-menu-link nav-link  nav-link-toggle" href="javascript:" title="{{ __('messages.customer_loyalty_point') }}">
                         <i class="tio-medal nav-icon"></i>
                         <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate  text-capitalize">
@@ -737,31 +737,31 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li>--}}
 
                 <!-- End Custommer -->
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/subscribed') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/subscribed') ? 'active' : '' }}">
                     <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('admin.customer.subscribed') }}" title="{{translate('subscribed_emails')}}">
                         <i class="tio-email-outlined nav-icon"></i>
                         <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
                             {{ translate('messages.subscribed_mail_list') }}
                         </span>
                     </a>
-                </li>
+                </li>--}}
                 <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/contact/contact-list') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.contact.contact-list') }}" title="{{ translate('messages.contact_messages') }}">
                         <span class="tio-message nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.contact_messages') }}</span>
                     </a>
                 </li>
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/settings') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/customer/settings') ? 'active' : '' }}">
                     <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('admin.customer.settings') }}" title="{{ __('messages.Customer') }} {{ __('messages.settings') }}">
                         <i class="tio-settings nav-icon"></i>
                         <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
                             {{ __('messages.Customer') }} {{ __('messages.settings') }}
                         </span>
                     </a>
-                </li>
+                </li>--}}
                 <li
                 class="navbar-vertical-aside-has-menu {{ Request::is('admin/message/list') ? 'active' : '' }}">
                 <a class="js-navbar-vertical-aside-menu-link nav-link"
