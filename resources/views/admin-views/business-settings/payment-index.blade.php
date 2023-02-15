@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <div class="row digital_payment_methods mt-3 g-3">
+        {{--<div class="row digital_payment_methods mt-3 g-3">
             <!-- This Design Will Implement On All Digital Payment Method Its an Static Design Card Start -->
             @php($config=\App\CentralLogics\Helpers::get_business_settings('ssl_commerz_payment'))
             <div class="col-md-6">
@@ -124,9 +124,9 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('paypal'))
@@ -163,7 +163,7 @@
                         </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
             <div class="col-md-6">
                 <div class="card">
@@ -241,7 +241,7 @@
                 </div>
             </div>
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('paystack'))
@@ -297,9 +297,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('senang_pay'))
@@ -344,9 +344,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('flutterwave'))
@@ -395,9 +395,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('mercadopago'))
@@ -442,9 +442,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('paymob_accept'))
@@ -505,9 +505,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('bkash'))
@@ -561,9 +561,9 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('paytabs'))
@@ -613,7 +613,7 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- End Col -->
             <div class="col-md-6">
                 <div class="card">
@@ -667,7 +667,7 @@
                 </div>
             </div>
             <!-- End Col -->
-            <div class="col-md-6">
+            {{--<div class="col-md-6">
                 <div class="card">
                     <div class="card-body p-30px">
                         @php($config=\App\CentralLogics\Helpers::get_business_settings('liqpay'))
@@ -712,7 +712,7 @@
                     </form>
                     </div>
                 </div>
-            </div>
+            </div>--}}
             <!-- This Design Will Implement On All Digital Payment Method Its an Static Design Card End -->
 
 
