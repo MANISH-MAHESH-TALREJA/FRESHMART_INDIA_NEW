@@ -166,7 +166,7 @@
                             </div>
                         </div>
                     </li>--}}
-                    {{--@php($mod = \App\Models\Module::find(Config::get('module.current_module_id')))
+                    @php($mod = \App\Models\Module::find(Config::get('module.current_module_id')))
                     <li class="nav-item __nav-item">
                         <a href="javascript:void(0)" class="__nav-link module--nav-icon" id="tourb-0">
                             @if ($mod)
@@ -218,7 +218,7 @@
                             </div>
                             @endif
                         </div>
-                    </li>--}}
+                    </li>
                 </ul>
                 <!-- End Navbar -->
             </div>
