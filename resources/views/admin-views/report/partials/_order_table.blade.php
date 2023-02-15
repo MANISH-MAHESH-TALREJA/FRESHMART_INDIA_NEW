@@ -5,7 +5,7 @@
     </td>
     <td class="table-column-pl-0">
         <a
-            href="{{ route('admin.order.details', ['id' => $order['id']]) }}">{{ $order['id'] }}</a>
+            href="{{ route('admin.order.details', ['id' => $order['id'],'module_id'=>$order['module_id']]) }}">{{ $order['id'] }}</a>
     </td>
     <td  class="text-capitalize">
         @if($order->store)
@@ -17,7 +17,7 @@
     <td>
         @if ($order->customer)
             <a class="text-body text-capitalize"
-                href="{{ route('admin.customer.view', [$order['user_id']]) }}">
+                href="{{ route('admin.users.customer.view', [$order['user_id']]) }}">
                 <strong>{{ $order->customer['f_name'] . ' ' . $order->customer['l_name'] }}</strong>
             </a>
         @else
@@ -128,11 +128,11 @@
     <td>
         <div class="btn--container justify-content-center">
             <a class="ml-2 btn btn-sm btn--warning btn-outline-warning action-btn"
-                href="{{ route('admin.order.details', ['id' => $order['id']]) }}">
+                href="{{ route('admin.order.details', ['id' => $order['id'],'module_id'=>$order['module_id']]) }}">
                 <i class="tio-invisible"></i>
             </a>
             <a class="ml-2 btn btn-sm btn--primary btn-outline-primary action-btn"
-                href="{{ route('admin.order.generate-invoice', ['id' => $order['id']]) }}">
+                href="{{ route('admin.transactions.order.generate-invoice', ['id' => $order['id']]) }}">
                 <i class="tio-print"></i>
             </a>
         </div>

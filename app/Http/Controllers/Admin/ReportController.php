@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Config;
 
 class ReportController extends Controller
 {
@@ -561,8 +562,8 @@ class ReportController extends Controller
         }));
         $key = isset($request['search']) ? explode(' ', $request['search']) : [];
 
-        $items = Item::with(['store','store.zone'])->withoutGlobalScope(StoreScope::class)->whereHas('store.module', function ($query) use ($stock_modules) {
-            $query->whereIn('module_type', $stock_modules);
+        $items = Item::withoutGlobalScope(StoreScope::class)->with(['store','store.zone'])->whereHas('store.module', function ($query) use ($stock_modules) {
+            $query->where('module_type', Config::get('module.current_module_type'));
         })
             ->when($request->query('module_id', null), function ($query) use ($request) {
                 return $query->module($request->query('module_id'));
@@ -2496,5 +2497,122 @@ class ReportController extends Controller
             compact('order_transaction', 'company_phone', 'company_name', 'company_email', 'company_web_logo', 'footer_text')
         );
         Helpers::gen_mpdf($mpdf_view, 'order_trans_statement', $order_transaction->id);
+    }
+
+    public function low_stock_report(Request $request)
+    {
+        $zone_id = $request->query('zone_id', isset(auth('admin')->user()->zone_id) ? auth('admin')->user()->zone_id : 'all');
+        $store_id = $request->query('store_id', 'all');
+        $zone = is_numeric($zone_id) ? Zone::findOrFail($zone_id) : null;
+        $store = is_numeric($store_id) ? Store::findOrFail($store_id) : null;
+        $stock_modules = array_keys(array_filter(config('module'), function ($var) {
+            if (isset($var['stock']) && $var['stock']) return $var;
+        }));
+        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+
+        $items = Item::withoutGlobalScope(StoreScope::class)->with(['store','store.zone'])->whereHas('store.module', function ($query){
+            $query->where('module_type','!=','food');
+        })
+            ->when($request->query('module_id', null), function ($query) use ($request) {
+                return $query->module($request->query('module_id'));
+            })
+            ->when(isset($zone), function ($query) use ($zone) {
+                return $query->whereIn('store_id', $zone->stores->pluck('id'));
+            })
+            ->when(isset($store), function ($query) use ($store) {
+                return $query->where('store_id', $store->id);
+            })
+            ->when(count($key), function ($query) use ($key) {
+                return $query->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->orWhere('name', 'like', "%{$value}%");
+                    }
+                });
+            })
+            ->orderBy('stock')
+            ->paginate(config('default_pagination'))->withQueryString();
+
+        return view('admin-views.report.low-stock-report', compact('zone', 'store', 'items'));
+    }
+
+    public function low_stock_wise_export(Request $request)
+    {
+        $zone_id = $request->query('zone_id', isset(auth('admin')->user()->zone_id) ? auth('admin')->user()->zone_id : 'all');
+        $store_id = $request->query('store_id', 'all');
+        $zone = is_numeric($zone_id) ? Zone::findOrFail($zone_id) : null;
+        $store = is_numeric($store_id) ? Store::findOrFail($store_id) : null;
+        $stock_modules = array_keys(array_filter(config('module'), function ($var) {
+            if (isset($var['stock']) && $var['stock']) return $var;
+        }));
+        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+
+        $items = Item::withoutGlobalScope(StoreScope::class)->with(['store','store.zone'])->whereHas('store.module', function ($query){
+            $query->where('module_type','!=','food');
+        })
+            ->when($request->query('module_id', null), function ($query) use ($request) {
+                return $query->module($request->query('module_id'));
+            })
+            ->when(isset($zone), function ($query) use ($zone) {
+                return $query->whereIn('store_id', $zone->stores->pluck('id'));
+            })
+            ->when(isset($store), function ($query) use ($store) {
+                return $query->where('store_id', $store->id);
+            })
+            ->when(count($key), function ($query) use ($key) {
+                return $query->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->orWhere('name', 'like', "%{$value}%");
+                    }
+                });
+            })
+            ->orderBy('stock')
+            ->get();
+
+        if ($request->type == 'excel') {
+            return (new FastExcel(Helpers::export_stock_wise_report($items)))->download('StockReport.xlsx');
+        } elseif ($request->type == 'csv') {
+            return (new FastExcel(Helpers::export_stock_wise_report($items)))->download('StockReport.csv');
+        }
+    }
+
+    public function low_stock_search(Request $request)
+    {
+        $key = explode(' ', $request['search']);
+
+        $zone_id = $request->query('zone_id', isset(auth('admin')->user()->zone_id) ? auth('admin')->user()->zone_id : 'all');
+        $store_id = $request->query('store_id', 'all');
+        $zone = is_numeric($zone_id) ? Zone::findOrFail($zone_id) : null;
+        $store = is_numeric($store_id) ? Store::findOrFail($store_id) : null;
+        $stock_modules = array_keys(array_filter(config('module'), function ($var) {
+            if (isset($var['stock']) && $var['stock']) return $var;
+        }));
+        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+
+        $items = Item::withoutGlobalScope(StoreScope::class)->with(['store','store.zone'])->whereHas('store.module', function ($query){
+            $query->where('module_type','!=','food');
+        })
+            ->when($request->query('module_id', null), function ($query) use ($request) {
+                return $query->module($request->query('module_id'));
+            })
+            ->when(isset($zone), function ($query) use ($zone) {
+                return $query->whereIn('store_id', $zone->stores->pluck('id'));
+            })
+            ->when(isset($store), function ($query) use ($store) {
+                return $query->where('store_id', $store->id);
+            })
+            ->when(count($key), function ($query) use ($key) {
+                return $query->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->orWhere('name', 'like', "%{$value}%");
+                    }
+                });
+            })
+            ->orderBy('stock')
+            ->limit(25)->get();
+
+        return response()->json([
+            'count' => count($items),
+            'view' => view('admin-views.report.partials._stock_table', compact('items'))->render()
+        ]);
     }
 }

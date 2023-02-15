@@ -120,7 +120,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-2">
-                                <div class="col-md-3 col-sm-6">
+                                {{-- <div class="col-md-3 col-sm-6">
                                     <div class="form-group mb-0">
                                         <label class="input-label">{{translate('messages.module')}}</label>
                                         <select name="module_id" required class="form-control js-select2-custom"  data-placeholder="{{translate('messages.select')}} {{translate('messages.module')}}" onchange="modulChange(this.value)">
@@ -131,7 +131,7 @@
                                         </select>
                                         <small class="text-danger">{{translate('messages.module_change_warning')}}</small>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="col-md-3 col-sm-6">
                                     <div class="form-group mb-0">
                                         <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.store')}}<span
@@ -438,7 +438,7 @@
         });
 
 
-        var module_id = 0;
+        var module_id = {{Config::get('module.current_module_id')}};
         var parent_category_id = 0;
         var stock = 0;
 
@@ -451,7 +451,6 @@
                     module_data = data;
                     stock = module_data.data.stock;
                     module_type = data.type;
-                    console.log(module_data);
                     if(stock)
                     {
                         $('#stock_input').show();
@@ -502,6 +501,8 @@
             });
             module_id = id;
         }
+
+        modulChange({{Config::get('module.current_module_id')}})
 
         function categoryChange(id)
         {

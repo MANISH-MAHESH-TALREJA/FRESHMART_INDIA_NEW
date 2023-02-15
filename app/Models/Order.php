@@ -175,7 +175,7 @@ class Order extends Model
 
     public function scopeSearchingForDeliveryman($query)
     {
-        return $query->whereNull('delivery_man_id')->where('order_type', '=' , 'delivery')->whereNotIn('order_status',['delivered','failed','canceled', 'refund_requested','refund_request_canceled', 'refunded']);
+        return $query->whereNull('delivery_man_id')->whereIn('order_type' , ['delivery','parcel'])->whereNotIn('order_status',['delivered','failed','canceled', 'refund_requested','refund_request_canceled', 'refunded']);
     }
 
     public function scopeDelivery($query)

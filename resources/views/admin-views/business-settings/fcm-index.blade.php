@@ -91,9 +91,9 @@
             </div>
         </div>
         <?php 
-        $module_type = 'grocery';
+        $mod_type = 'grocery';
         if(request('module_type')){
-            $module_type = request('module_type');
+            $mod_type = request('module_type');
         }
         ?>
         <div class="card">
@@ -121,8 +121,8 @@
                         <select name="module_type" class="form-control js-select2-custom" onchange="set_filter('{{url()->full()}}',this.value,'module_type')" title="{{translate('messages.select')}} {{translate('messages.modules')}}">
                             @foreach (config('module.module_type') as $module)
                                 <option
-                                    value="{{$module}}" {{$module_type == $module?'selected':''}}>
-                                    {{$module}}
+                                    value="{{$module}}" {{$mod_type == $module?'selected':''}}>
+                                    {{ucfirst($module)}}
                                 </option>
                             @endforeach
                         </select>
@@ -139,7 +139,7 @@
 
                         <div class="{{$lang != $default_lang ? 'd-none':''}} lang_form" id="{{$lang}}-form">
                             <div class="row">
-                                @php($opm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_pending_message')->first())
+                                @php($opm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_pending_message')->first())
                                 @php($data=$opm?$opm:null)                         
                                 <?php
                                         if(isset($opm->translations) && count($opm->translations)){
@@ -183,7 +183,7 @@
                                     </div>
                                 </div>
 
-                                @php($ocm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_confirmation_msg')->first())
+                                @php($ocm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_confirmation_msg')->first())
                                 @php($data=$ocm?$ocm:'')
                                 <?php
                                 if(isset($ocm->translations)&&count($ocm->translations)){
@@ -225,10 +225,10 @@
                                         @endif >{!! (isset($translate_2) && isset($translate_2[$lang]))?$translate_2[$lang]['message']:($data?$data['message']:'') !!}</textarea>
                                     </div>
                                 </div>
-                                @if ($module_type != 'parcel')
+                                @if ($mod_type != 'parcel')
                                     
 
-                                @php($oprm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_processing_message')->first())
+                                @php($oprm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_processing_message')->first())
 
                                 @php($data=$oprm?$oprm:null)
                                 
@@ -271,7 +271,7 @@
                                     </div>
                                 </div>
 
-                                @php($dbs=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_handover_message')->first())
+                                @php($dbs=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_handover_message')->first())
                                 @php($data=$dbs?$dbs:'')
                                 <?php
                                 if(isset($dbs->translations) && count($dbs->translations)){
@@ -318,7 +318,7 @@
                                 @endif
 
 
-                                @php($ofdm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','out_for_delivery_message')->first())
+                                @php($ofdm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','out_for_delivery_message')->first())
                                 @php($data=$ofdm?$ofdm:'')
                                 <?php
                                 if(isset($ofdm->translations) && count($ofdm->translations)){
@@ -362,7 +362,7 @@
                                     </div>
                                 </div>
 
-                                @php($odm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_delivered_message')->first())
+                                @php($odm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_delivered_message')->first())
                                 @php($data=$odm?$odm:'')
                                 <?php
                                 if(isset($odm->translations)&&count($odm->translations)){
@@ -406,7 +406,7 @@
                                     </div>
                                 </div>
 
-                                @php($dba=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','delivery_boy_assign_message')->first())
+                                @php($dba=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','delivery_boy_assign_message')->first())
                                 @php($data=$dba?$dba:'')
                                 <?php
                                 if(isset($dba->translations) && count($dba->translations)){
@@ -451,7 +451,7 @@
                                     </div>
                                 </div>
 
-                                @php($dbc=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','delivery_boy_delivered_message')->first())
+                                @php($dbc=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','delivery_boy_delivered_message')->first())
                                 
                                 @php($data=$dbc?$dbc:'')
                                 <?php
@@ -498,7 +498,7 @@
                                     </div>
                                 </div>
 
-                                @php($ocm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_cancled_message')->first())
+                                @php($ocm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_cancled_message')->first())
                                 @php($data=$ocm?$ocm:'')
                                 <?php
                                 if(isset($ocm->translations) && count($ocm->translations)){
@@ -544,8 +544,8 @@
                                         >{!! (isset($translate_9) && isset($translate_9[$lang]))?$translate_9[$lang]['message']:($data?$data['message']:'') !!}</textarea>
                                     </div>
                                 </div>
-                                @if ($module_type != 'parcel')
-                                @php($orm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','order_refunded_message')->first())
+                                @if ($mod_type != 'parcel')
+                                @php($orm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','order_refunded_message')->first())
                                 @php($data=$orm?$orm:'')
                                 <?php
                                 if(isset($orm->translations)&&count($orm->translations)){
@@ -590,7 +590,7 @@
                                     </div>
                                 </div>
 
-                                @php($rrcm=\App\Models\NotificationMessage::with('translations')->where('module_type',$module_type)->where('key','refund_request_canceled')->first())
+                                @php($rrcm=\App\Models\NotificationMessage::with('translations')->where('module_type',$mod_type)->where('key','refund_request_canceled')->first())
                                 @php($data=$rrcm?$rrcm:'')
                                 <?php
                                 if(isset($rrcm->translations) && count($rrcm->translations)){
@@ -634,7 +634,7 @@
                                 </div>
                                 @endif
                                 <input type="hidden" name="lang[]" value="{{$lang}}">
-                                <input type="hidden" name="module_type" value="{{$module_type}}">
+                                <input type="hidden" name="module_type" value="{{$mod_type}}">
                             </div>
                         </div>
                         @endforeach

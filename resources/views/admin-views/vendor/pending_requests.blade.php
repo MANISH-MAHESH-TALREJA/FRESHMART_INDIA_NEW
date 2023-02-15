@@ -13,7 +13,7 @@
             <h1 class="page-header-title"><i class="tio-filter-list"></i> {{translate('messages.new_joining_requests')}}</h1>
             <div class="page-header-select-wrapper">
 
-                <div class="select-item">
+                {{-- <div class="select-item">
                     <select name="module_id" class="form-control js-select2-custom"
                             onchange="set_filter('{{ url()->full() }}',this.value,'module_id')" title="{{translate('messages.select')}} {{translate('messages.modules')}}">
                         <option value="" {{!request('module_id') ? 'selected':''}}>{{translate('messages.all')}} {{translate('messages.modules')}}</option>
@@ -24,7 +24,7 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
                 @if(!isset(auth('admin')->user()->zone_id))
                 <div class="select-item">
                     <select name="zone_id" class="form-control js-select2-custom"

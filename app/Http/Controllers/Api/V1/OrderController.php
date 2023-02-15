@@ -465,9 +465,18 @@ class OrderController extends Controller
             $coupon_discount_amount = $coupon ? CouponLogic::get_discount($coupon, $product_price + $total_addon_price - $store_discount_amount) : 0;
             $total_price = $product_price + $total_addon_price - $store_discount_amount - $coupon_discount_amount;
 
-            $tax = $store->tax;
-            $total_tax_amount = ($tax > 0) ? (($total_price * $tax) / 100) : 0;
-
+            $tax = ($store->tax > 0)?$store->tax:0;
+            $order->tax_status = 'excluded';
+    
+            $tax_included =BusinessSetting::where(['key'=>'tax_included'])->first() ?  BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
+            if ($tax_included ==  1){
+                $order->tax_status = 'included';
+            }
+    
+            $total_tax_amount=Helpers::product_tax($total_price,$tax,$order->tax_status =='included');
+    
+            $tax_a=$order->tax_status =='included'?0:$total_tax_amount;
+            
             if ($store->minimum_order > $product_price + $total_addon_price) {
                 return response()->json([
                     'errors' => [
@@ -504,7 +513,7 @@ class OrderController extends Controller
 
             $order->store_discount_amount = round($store_discount_amount, config('round_up_to_digit'));
             $order->total_tax_amount = round($total_tax_amount, config('round_up_to_digit'));
-            $order->order_amount = round($total_price + $total_tax_amount + $order->delivery_charge, config('round_up_to_digit'));
+            $order->order_amount = round($total_price + $tax_a + $order->delivery_charge, config('round_up_to_digit'));
             $order->free_delivery_by = $free_delivery_by;
         } else {
             $point = new Point(json_decode($request->receiver_details, true)['latitude'], json_decode($request->receiver_details, true)['longitude']);
@@ -782,8 +791,17 @@ class OrderController extends Controller
         $coupon_discount_amount = $coupon ? CouponLogic::get_discount($coupon, $product_price + $total_addon_price - $store_discount_amount) : 0;
         $total_price = $product_price + $total_addon_price - $store_discount_amount - $coupon_discount_amount;
 
-        $tax = $store->tax;
-        $total_tax_amount = ($tax > 0) ? (($total_price * $tax) / 100) : 0;
+        $tax = ($store->tax > 0)?$store->tax:0;
+        $order->tax_status = 'excluded';
+
+        $tax_included =BusinessSetting::where(['key'=>'tax_included'])->first() ?  BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
+        if ($tax_included ==  1){
+            $order->tax_status = 'included';
+        }
+
+        $total_tax_amount=Helpers::product_tax($total_price,$tax,$order->tax_status =='included');
+
+        $tax_a=$order->tax_status =='included'?0:$total_tax_amount;
 
         $free_delivery_over = BusinessSetting::where('key', 'free_delivery_over')->first()->value;
         if (isset($free_delivery_over)) {
@@ -813,7 +831,7 @@ class OrderController extends Controller
 
         $order->store_discount_amount = round($store_discount_amount, config('round_up_to_digit'));
         $order->total_tax_amount = round($total_tax_amount, config('round_up_to_digit'));
-        $order->order_amount = round($total_price + $total_tax_amount + $order->delivery_charge, config('round_up_to_digit'));
+        $order->order_amount = round($total_price + $tax_a + $order->delivery_charge, config('round_up_to_digit'));
         $order->free_delivery_by = $free_delivery_by;
         $order->order_amount = $order->order_amount + $order->dm_tips;
 

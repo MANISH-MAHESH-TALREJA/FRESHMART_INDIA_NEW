@@ -8,6 +8,7 @@
     $deliverman_tips = 0;
     $campaign_order = isset($order->details[0]->campaign) ? true : false;
     $parcel_order = $order->order_type == 'parcel' ? true : false;
+    $tax_included =0;
     ?>
     <div class="content container-fluid">
         <!-- Page Header -->
@@ -53,7 +54,7 @@
                     <div class="card-header border-0 align-items-start flex-wrap">
                         <div class="order-invoice-left d-flex d-sm-block justify-content-between">
                             <div>
-                                <h1 class="page-header-title">
+                                <h1 class="page-header-title d-flex align-items-center __gap-5px">
                                     {{ translate('messages.order') }} #{{ $order['id'] }}
                                     @if ($campaign_order)
                                         <span class="badge badge-soft-success ml-sm-3">
@@ -66,34 +67,34 @@
                                         </span>
                                     @endif
                                 </h1>
-                                <span class="mt-2 d-block">
+                                <span class="mt-2 d-block d-flex align-items-center __gap-5px">
                                     <i class="tio-date-range"></i>
                                     {{ date('d M Y ' . config('timeformat'), strtotime($order['created_at'])) }}
                                 </span>
                                 @if (!$parcel_order)
-                                    <h6 class="mt-2 pt-1 mb-2">
+                                    <h6 class="mt-2 pt-1 mb-2 d-flex align-items-center __gap-5px">
                                         <i class="tio-shop"></i>
-                                        {{ translate('messages.store') }} : <span
+                                        <span>{{ translate('messages.store') }}</span> <span>:</span> <span
                                             class="badge badge-soft-primary">{{ Str::limit($order->store ? $order->store->name : translate('messages.store deleted!'), 25, '...') }}</span>
                                     </h6>
                                 @endif
                                 @if ($order->schedule_at && $order->scheduled)
-                                    <h6 class="text-capitalize">
-                                        {{ translate('messages.scheduled_at') }}
-                                        : <label
+                                    <h6 class="text-capitalize d-flex align-items-center __gap-5px">
+                                        <span>{{ translate('messages.scheduled_at') }}</span>
+                                        <span>:</span> <label
                                             class="fz--10 badge badge-soft-warning">{{ date('d M Y ' . config('timeformat'), strtotime($order['schedule_at'])) }}</label>
                                     </h6>
                                 @endif
                                 @if ($order->coupon)
-                                    <h6 class="text-capitalize">{{ translate('messages.coupon') }}
-                                        : <label class="fz--10 badge badge-soft-primary">{{ $order->coupon_code }}
+                                    <h6 class="text-capitalize d-flex align-items-center __gap-5px"><span>{{ translate('messages.coupon') }}</span>
+                                        <span>:</span> <label class="fz--10 badge badge-soft-primary">{{ $order->coupon_code }}
                                             ({{ translate('messages.' . $order->coupon->coupon_type) }})</label>
                                     </h6>
                                 @endif
                                 <div class="hs-unfold mt-1">
                                     <h5>
                                         <button
-                                            class="btn order--details-btn-sm btn--primary btn-outline-primary btn--sm font-regular"
+                                            class="btn order--details-btn-sm btn--primary btn-outline-primary btn--sm font-regular d-flex align-items-center __gap-5px"
                                             data-toggle="modal" data-target="#locationModal"><i class="tio-poi"></i>
                                             {{ translate('messages.show_locations_on_map') }}</button>
                                     </h5>
@@ -106,7 +107,7 @@
                                 @endif
                             </div>
                             <div class="d-sm-none">
-                                <a class="btn btn--primary print--btn font-regular"
+                                <a class="btn btn--primary print--btn font-regular d-flex align-items-center __gap-5px"
                                     href={{ route('admin.order.generate-invoice', [$order['id']]) }}>
                                     <i class="tio-print mr-sm-1"></i> <span>{{ translate('messages.print') }}
                                         {{ translate('messages.invoice') }}</span>
@@ -135,7 +136,7 @@
                             </div>
                             <div class="text-right mt-3 order-invoice-right-contents text-capitalize">
                                 <h6>
-                                    {{ translate('status') }} :
+                                    <span>{{ translate('status') }}</span> <span>:</span>
                                     @if ($order['order_status'] == 'pending')
                                         <span class="badge badge-soft-info ml-2 ml-sm-3 text-capitalize">
                                             {{ translate('messages.pending') }}
@@ -168,28 +169,28 @@
                                     @endif
                                 </h6>
                                 <h6 class="text-capitalize">
-                                    {{ translate('messages.payment') }} {{ translate('messages.method') }} :
-                                    {{ translate(str_replace('_', ' ', $order['payment_method'])) }}
+                                    <span>{{ translate('messages.payment') }} {{ translate('messages.method') }}</span> <span>:</span>
+                                    <span>{{ translate(str_replace('_', ' ', $order['payment_method'])) }}</span>
                                 </h6>
                                 <h6 class="">
                                     @if ($order['transaction_reference'] == null)
-                                        {{ translate('messages.reference') }} {{ translate('messages.code') }} :
+                                        <span>{{ translate('messages.reference') }} {{ translate('messages.code') }}</span> <span>:</span>
                                         <button class="btn btn-outline-primary btn-sm" data-toggle="modal"
                                             data-target=".bd-example-modal-sm">
                                             {{ translate('messages.add') }}
                                         </button>
                                     @else
-                                        {{ translate('messages.reference') }} {{ translate('messages.code') }} :
-                                        {{ $order['transaction_reference'] }}
+                                        <span>{{ translate('messages.reference') }} {{ translate('messages.code') }}</span> <span>:</span>
+                                        <span>{{ $order['transaction_reference'] }}</span>
                                     @endif
                                 </h6>
-                                <h6 class="text-capitalize">{{ translate('messages.order') }}
-                                    {{ translate('messages.type') }}
-                                    : <label
-                                        class="fz--10 badge badge-soft-primary">{{ translate(str_replace('_', ' ', $order['order_type'])) }}</label>
+                                <h6 class="text-capitalize">
+                                    <span>{{ translate('Order Type') }}</span>
+                                    <span>:</span> <label
+                                        class="fz--10 badge badge-soft-primary m-0">{{ translate(str_replace('_', ' ', $order['order_type'])) }}</label>
                                 </h6>
                                 <h6>
-                                    {{ translate('payment_status') }} :
+                                    <span>{{ translate('payment_status') }}</span> <span>:</span>
                                     @if ($order['payment_status'] == 'paid')
                                         <span class="badge badge-soft-success ml-sm-3">
                                             {{ translate('messages.paid') }}
@@ -207,7 +208,7 @@
                                             $order_images = json_decode($order->order_attachment);
                                         @endphp
                                         <h5 class="text-dark">
-                                            {{ translate('messages.prescription') }}:
+                                            <span>{{ translate('messages.prescription') }}</span> <span>:</span>
                                         </h5>
                                         <div class="d-flex flex-wrap" style="gap:15px">
                                             @foreach ($order_images as $key => $item)
@@ -252,7 +253,7 @@
                                         </div>
                                     @else
                                     <h5 class="text-dark">
-                                        {{ translate('messages.prescription') }}:
+                                        <span>{{ translate('messages.prescription') }}</span> <span>:</span>
                                     </h5>
                                     <button class="btn w-100 px-0" data-toggle="modal" data-target="#imagemodal"
                                         title="{{ translate('messages.order') }} {{ translate('messages.attachment') }}">
@@ -475,7 +476,7 @@
                                                                 </div>
                                                             @else
                                                                 <a class="avatar avatar-xl mr-3"
-                                                                    href="{{ route('admin.item.view', $detail->item['id']) }}">
+                                                                    href="{{ route('admin.item.view', [$detail->item['id'],'module_id' => $order->module_id]) }}">
                                                                     <img class="img-fluid rounded aspect-ratio-1"
                                                                         src="{{ asset('storage/app/public/product') }}/{{ $detail->item['image'] }}"
                                                                         onerror="this.src='{{ asset('public/assets/admin/img/160x160/img2.jpg') }}'"
@@ -728,6 +729,9 @@
                             $total_price = $product_price + $total_addon_price - $store_discount_amount - $coupon_discount_amount;
                             
                             $total_tax_amount = $order['total_tax_amount'];
+                            if($order->tax_status == 'included'){
+                                $total_tax_amount=0;
+                            }
                             $deliverman_tips = $order['dm_tips'];
                             
                             if ($editing) {
@@ -749,6 +753,11 @@
                                 $total_tax_amount = $tax > 0 ? ($total_price * $tax) / 100 : 0;
                             
                                 $total_tax_amount = round($total_tax_amount, 2);
+
+                                $tax_included = \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first() ?  \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
+                                if ($tax_included ==  1){
+                                    $total_tax_amount=0;
+                                }
                             
                                 $store_discount_amount = round($store_discount_amount, 2);
                             
@@ -791,7 +800,11 @@
                                             </dd>
                                         @endif
 
-                                        <dt class="col-6">{{ translate('messages.subtotal') }}:</dt>
+                                        <dt class="col-6">{{ translate('messages.subtotal') }}
+                                            @if ($order->tax_status == 'included' ||  $tax_included ==  1)
+                                            ({{ translate('messages.TAX_Included') }})
+                                            @endif
+                                            :</dt>
                                         <dd class="col-6">
                                             {{ \App\CentralLogics\Helpers::format_currency($product_price + $total_addon_price) }}
                                         </dd>
@@ -804,9 +817,14 @@
                                         <dd class="col-6">
                                             - {{ \App\CentralLogics\Helpers::format_currency($coupon_discount_amount) }}
                                         </dd>
+                                        @if ($order->tax_status == 'excluded' || $order->tax_status == null  )
+                                        {{-- @php($tax_a=0) --}}
                                         <dt class="col-6">{{ translate('messages.vat/tax') }}:</dt>
-                                        <dd class="col-6">
-                                            + {{ \App\CentralLogics\Helpers::format_currency($total_tax_amount) }}</dd>
+                                        <dd class="col-6 text-right">
+                                            +
+                                            {{ \App\CentralLogics\Helpers::format_currency($total_tax_amount) }}
+                                        </dd>
+                                        @endif
                                         <dt class="col-6">{{ translate('messages.delivery') }}
                                             {{ translate('messages.fee') }}:</dt>
                                         <dd class="col-6">
@@ -1059,7 +1077,7 @@
                                     @endif
                                 </h5>
                                 <a class="media align-items-center deco-none customer--information-single"
-                                    href="{{ route('admin.delivery-man.preview', [$order->delivery_man['id']]) }}">
+                                    href="{{ route('admin.users.delivery-man.preview', [$order->delivery_man['id']]) }}">
                                     <div class="avatar avatar-circle">
                                         <img class="avatar-img"
                                             onerror="this.src='{{ asset('public/assets/admin/img/160x160/img1.jpg') }}'"
@@ -1122,7 +1140,7 @@
                             </h5>
 
                             <a class="media align-items-center deco-none customer--information-single"
-                                href="{{ route('admin.customer.view', [$order->customer['id']]) }}">
+                                href="{{ route('admin.users.customer.view', [$order->customer['id']]) }}">
                                 <div class="avatar avatar-circle">
                                     <img class="avatar-img"
                                         onerror="this.src='{{ asset('public/assets/admin/img/160x160/img1.jpg') }}'"
@@ -1134,11 +1152,11 @@
                                         {{ $order->customer['f_name'] . ' ' . $order->customer['l_name'] }}
                                     </span>
                                     <span>{{ $order->customer->orders_count }} {{ translate('messages.orders') }}</span>
-                                    <span class="text--title font-semibold d-block">
-                                        <i class="tio-call-talking-quiet mr-2"></i>{{ $order->customer['phone'] }}
+                                    <span class="text--title font-semibold d-flex align-items-center">
+                                        <i class="tio-call-talking-quiet mr-2"></i> <span>{{ $order->customer['phone'] }}</span>
                                     </span>
-                                    <span class="text--title">
-                                        <i class="tio-email mr-2"></i>{{ $order->customer['email'] }}
+                                    <span class="text--title d-flex align-items-center">
+                                        <i class="tio-email mr-2"></i> <span>{{ $order->customer['email'] }}</span>
                                     </span>
                                 </div>
                             </a>
@@ -1155,12 +1173,12 @@
                                         <span class="name">{{ translate('messages.name') }}</span>
                                         <span class="info">{{ $receiver_details['contact_person_name'] }}</span>
                                         <span class="name">{{ translate('messages.contact') }}</span>
-                                        <a class="deco-none info"
+                                        <a class="deco-none info d-flex"
                                             href="tel:{{ $receiver_details['contact_person_number'] }}">
                                             {{ $receiver_details['contact_person_number'] }}</a>
                                         @if (isset($receiver_details['address']))
                                             @if (isset($receiver_details['latitude']) && isset($receiver_details['longitude']))
-                                                <a class="mt-2" target="_blank"
+                                                <a class="mt-2 d-flex" target="_blank"
                                                     href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ $receiver_details['latitude'] }}+{{ $receiver_details['longitude'] }}">
                                                     <i class="tio-poi"></i>{{ $receiver_details['address'] }}
                                                 </a>
@@ -1189,7 +1207,7 @@
                                 </h5>
                                 @if ($order->order_status != 'delivered')
                                     @if (isset($address) && !$parcel_order)
-                                        <a class="link" data-toggle="modal" data-target="#shipping-address-modal"
+                                        <a class="link d-flex" data-toggle="modal" data-target="#shipping-address-modal"
                                             href="javascript:"><i class="tio-edit"></i></a>
                                     @endif
                                 @endif
@@ -1211,7 +1229,7 @@
                                     <div>
                                         @if (isset($address['address']))
                                             @if (isset($address['latitude']) && isset($address['longitude']))
-                                                <a target="_blank"
+                                                <a target="_blank" class="d-flex align-items-center"
                                                     href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ $address['latitude'] }}+{{ $address['longitude'] }}">
                                                     <i class="tio-poi"></i>{{ $address['address'] }}
                                                 </a>
@@ -1240,7 +1258,7 @@
                                 <span>{{ translate('messages.store_information') }}</span>
                             </h5>
                             <a class="media align-items-center deco-none resturant--information-single"
-                                href="{{ route('admin.store.view', [$order->store['id']]) }}">
+                                href="{{ route('admin.store.view', [$order->store['id'],'module_id' => $order->module_id]) }}">
                                 <div class="avatar avatar-circle">
                                     <img class="avatar-img w-75px"
                                         onerror="this.src='{{ asset('public/assets/admin/img/100x100/1.png') }}'"
@@ -1252,19 +1270,18 @@
                                         {{ $order->store['name'] }}
                                     </span>
                                     <span>{{ $order->store->orders_count }} {{ translate('messages.orders') }}</span>
-                                    <span class="text--title font-semibold d-block">
+                                    <span class="text--title font-semibold d-flex align-items-center">
                                         <i class="tio-call-talking-quiet mr-2"></i>{{ $order->store['phone'] }}
                                     </span>
-                                    <span class="text--title">
+                                    <span class="text--title d-flex align-items-center">
                                         <i class="tio-email mr-2"></i>{{ $order->store['email'] }}
                                     </span>
                                 </div>
                             </a>
                             <hr>
                             <span class="d-block">
-                                <a target="_blank"
-                                    href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ $order->store['latitude'] }}+{{ $order->store['longitude'] }}">
-                                    <i class="tio-poi"></i> {{ $order->store['address'] }}<br>
+                                <a target="_blank" class="d-flex align-items-center __gap-5px" href="http://maps.google.com/maps?z=12&t=m&q=loc:{{ $order->store['latitude'] }}+{{ $order->store['longitude'] }}">
+                                    <i class="tio-poi"></i> <span>{{ $order->store['address'] }}</span><br>
                                 </a>
                             </span>
                         </div>

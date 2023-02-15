@@ -2,10 +2,10 @@
     <div id="printableArea">
         <div>
             <center>
-                <input type="button" class="btn btn-primary non-printable" onclick="printDiv('printableArea')"
+                <input type="button" class="btn btn-primary mt-3 non-printable" onclick="printDiv('printableArea')"
                     value="Proceed, If thermal printer is ready." />
                 <a href="{{ url()->previous() }}"
-                    class="btn btn-danger non-printable">{{ translate('messages.back') }}</a>
+                    class="btn btn-danger non-printable mt-3">{{ translate('messages.back') }}</a>
             </center>
             <hr class="non-printable">
             <div class="print--invoice initial-38-1">
@@ -18,8 +18,8 @@
                             <div>
                                 {{ $order->store->address }}
                             </div>
-                            <div class="mt-1">
-                                {{ translate('messages.phone') }} : {{ $order->store->phone }}
+                            <div class="mt-1 d-flex justify-content-center">
+                                <span>{{ translate('messages.phone') }}</span> <span>:</span> <span>{{ $order->store->phone }}</span>
                             </div>
                         </div>
                     </div>
@@ -30,7 +30,7 @@
                     <img src="{{ asset('/public/assets/admin/img/invoice-star.png') }}" alt="" class="w-100">
                 </div>
                 <div class="order-info-id text-center">
-                    <h5>{{ translate('order_id') }} : {{ $order['id'] }}</h5>
+                    <h5 class="d-flex justify-content-center"><span>{{ translate('order_id') }}</span> <span>:</span> <span>{{ $order['id'] }}</span></h5>
                     <div>
                         {{ date('d/M/Y ' . config('timeformat'), strtotime($order['created_at'])) }}
                     </div>
@@ -41,49 +41,49 @@
                             <div class="col-12">
                                 @php($address = json_decode($order->delivery_address, true))
                                 <h5>{{ translate('messages.sender') }} {{ translate('messages.info') }}</h5>
-                                <div>
-                                    {{ translate('messages.sender') }} {{ translate('messages.name') }} :
-                                    {{ isset($address) ? $address['contact_person_name'] : $order->address['f_name'] . ' ' . $order->customer['l_name'] }}
+                                <div class="d-flex">
+                                    <span>{{ translate('messages.sender') }} {{ translate('messages.name') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['contact_person_name'] : $order->address['f_name'] . ' ' . $order->customer['l_name'] }}</span>
                                 </div>
-                                <div>
-                                    {{ translate('messages.phone') }} :
-                                    {{ isset($address) ? $address['contact_person_number'] : $order->customer['phone'] }}
+                                <div class="d-flex">
+                                    <span>{{ translate('messages.phone') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['contact_person_number'] : $order->customer['phone'] }}</span>
                                 </div>
-                                <div class="text-break">
-                                    {{ translate('messages.address') }} :
-                                    {{ isset($address) ? $address['address'] : '' }}
+                                <div class="text-break d-flex">
+                                    <span class="word-nobreak">{{ translate('messages.address') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['address'] : '' }}</span>
                                 </div>
                                 @php($address = $order->receiver_details)
                                 <h5><u>{{ translate('messages.receiver') }} {{ translate('messages.info') }}</u></h5>
-                                <div>
-                                    {{ translate('messages.receiver') }} {{ translate('messages.name') }} :
-                                    {{ isset($address) ? $address['contact_person_name'] : $order->address['f_name'] . ' ' . $order->customer['l_name'] }}
+                                <div class="d-flex">
+                                    <span>{{ translate('messages.receiver') }} {{ translate('messages.name') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['contact_person_name'] : $order->address['f_name'] . ' ' . $order->customer['l_name'] }}</span>
                                 </div>
-                                <div>
-                                    {{ translate('messages.phone') }} :
-                                    {{ isset($address) ? $address['contact_person_number'] : $order->customer['phone'] }}
+                                <div class="d-flex">
+                                    <span>{{ translate('messages.phone') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['contact_person_number'] : $order->customer['phone'] }}</span>
                                 </div>
-                                <div class="text-break">
-                                    {{ translate('messages.address') }} :
-                                    {{ isset($address) ? $address['address'] : '' }}
+                                <div class="text-break d-flex">
+                                    <span class="word-nobreak">{{ translate('messages.address') }}</span> <span>:</span>
+                                    <span>{{ isset($address) ? $address['address'] : '' }}</span>
                                 </div>
                             </div>
                         @else
                             <div class="col-12">
                                 @php($address = json_decode($order->delivery_address, true))
                                 @if (!empty($address))
-                                    <h5>
-                                        {{ translate('messages.contact_name') }} :
-                                        {{ isset($address['contact_person_name']) ? $address['contact_person_name'] : '' }}
+                                    <h5 class="d-flex">
+                                        <span>{{ translate('messages.contact_name') }}</span> <span>:</span>
+                                        <span>{{ isset($address['contact_person_name']) ? $address['contact_person_name'] : '' }}</span>
                                     </h5>
-                                    <h5>
-                                        {{ translate('messages.phone') }} :
-                                        {{ isset($address['contact_person_number']) ? $address['contact_person_number'] : '' }}
+                                    <h5 class="d-flex">
+                                        <span>{{ translate('messages.phone') }}</span> <span>:</span>
+                                        <span>{{ isset($address['contact_person_number']) ? $address['contact_person_number'] : '' }}</span>
                                     </h5>
                                 @endif
-                                <h5 class="text-break">
-                                    {{ translate('messages.address') }} :
-                                    {{ isset($order->delivery_address) ? json_decode($order->delivery_address, true)['address'] : '' }}
+                                <h5 class="text-break d-flex">
+                                    <span class="word-nobreak">{{ translate('messages.address') }}</span> <span>:</span>
+                                    <span>{{ isset($order->delivery_address) ? json_decode($order->delivery_address, true)['address'] : '' }}</span>
                                 </h5>
                             </div>
                         @endif
@@ -243,7 +243,11 @@
                 <div class="checkout--info">
                     <dl class="row text-right">
                         @if ($order->order_type != 'parcel')
-                            <dt class="col-6">{{ translate('messages.subtotal') }}:</dt>
+                            <dt class="col-6">{{ translate('messages.subtotal') }}
+                                @if ($order->tax_status == 'included' )
+                                    ({{ translate('messages.TAX_Included') }})
+                                    @endif
+                                :</dt>
                             <dd class="col-6">
                                 {{ \App\CentralLogics\Helpers::format_currency($sub_total + $add_ons_cost) }}</dd>
                             <dt class="col-6">{{ translate('messages.discount') }}:</dt>
@@ -256,9 +260,11 @@
                                 -
                                 {{ \App\CentralLogics\Helpers::format_currency($order['coupon_discount_amount']) }}
                             </dd>
+                            @if ($order->tax_status == 'excluded' || $order->tax_status == null  )
                             <dt class="col-6">{{ translate('messages.vat/tax') }}:</dt>
                             <dd class="col-6">+
                                 {{ \App\CentralLogics\Helpers::format_currency($order['total_tax_amount']) }}</dd>
+                            @endif
                             <dt class="col-6">{{ translate('messages.delivery_man_tips') }}:</dt>
                             <dd class="col-6">
                                 @php($delivery_man_tips = $order['dm_tips'])
@@ -282,11 +288,12 @@
                     </dl>
                     @if ($order->payment_method != 'cash_on_delivery')
                         <div class="d-flex flex-row justify-content-between border-top">
-                            <span>{{ translate('messages.Paid by') }}:
-                                {{ translate('messages.' . $order->payment_method) }}</span>
-                            <span>{{ translate('messages.amount') }}:
-                                {{ $order->adjusment + $order->order_amount }}</span>
-                            <span>{{ translate('messages.change') }}: {{ abs($order->adjusment) }}</span>
+                            <span class="d-flex">
+                                <span>{{ translate('messages.Paid by') }}</span> <span>:</span>
+                                <span>{{ translate('messages.' . $order->payment_method) }}</span> </span>
+                            <span> <span>{{ translate('messages.amount') }}</span> <span>:</span>
+                                <span>{{ $order->adjusment + $order->order_amount }}</span> </span>
+                            <span> <span>{{ translate('messages.change') }}</span> <span>:</span> <span>{{ abs($order->adjusment) }}</span> </span>
                         </div>
                     @endif
                 </div>

@@ -29,10 +29,10 @@
     <!-- Page Header Menu -->
     <ul class="nav nav-tabs page-header-tabs mb-2">
         <li class="nav-item">
-            <a href="{{route('admin.report.store-summary-report')}}" class="nav-link active">{{translate('Summary Report')}}</a>
+            <a href="{{route('admin.transactions.report.store-summary-report')}}" class="nav-link active">{{translate('Summary Report')}}</a>
         </li>
         <li class="nav-item">
-            <a href="{{route('admin.report.store-sales-report')}}" class="nav-link">{{translate('Sales Report')}}</a>
+            <a href="{{route('admin.transactions.report.store-sales-report')}}" class="nav-link">{{translate('Sales Report')}}</a>
         </li>
         <li class="nav-item">
             <a href="{{ route('admin.report.store-order-report') }}" class="nav-link">{{translate('Order Report')}}</a>
@@ -249,13 +249,13 @@
                         class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-sm-right">
                         <span class="dropdown-header">{{ translate('messages.download') }}
                             {{ translate('messages.options') }}</span>
-                        <a id="export-excel" class="dropdown-item" href="{{route('admin.report.store-summary-report-export', ['type'=>'excel',request()->getQueryString()])}}">
+                        <a id="export-excel" class="dropdown-item" href="{{route('admin.transactions.report.store-summary-report-export', ['type'=>'excel',request()->getQueryString()])}}">
                             <img class="avatar avatar-xss avatar-4by3 mr-2"
                                 src="{{ asset('public/assets/admin') }}/svg/components/excel.svg"
                                 alt="Image Description">
                             {{ translate('messages.excel') }}
                         </a>
-                        <a id="export-csv" class="dropdown-item" href="{{route('admin.report.store-summary-report-export', ['type'=>'csv',request()->getQueryString()])}}">
+                        <a id="export-csv" class="dropdown-item" href="{{route('admin.transactions.report.store-summary-report-export', ['type'=>'csv',request()->getQueryString()])}}">
                             <img class="avatar avatar-xss avatar-4by3 mr-2"
                                 src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                 alt="Image Description">
@@ -292,7 +292,7 @@
                         <tr>
                             <td>{{$k+$stores->firstItem()}}</td>
                             <td>
-                                <a href="{{route('admin.store.view', $store->id)}}">{{ $store->name }}</a>
+                                <a href="{{route('admin.store.view', [$store->id, 'module_id'=>$store->module_id])}}">{{ $store->name }}</a>
                             </td>
                             <td class="text-center">
                                 {{ $store->orders->count() }}
@@ -317,7 +317,7 @@
                             </td>
                             <td>
                                 <div class="btn--container justify-content-center">
-                                    <a href="{{route('admin.store.view', $store->id)}}" class="action-btn btn--primary btn-outline-primary">
+                                    <a href="{{route('admin.store.view', [$store->id, 'module_id'=>$store->module_id])}}" class="action-btn btn--primary btn-outline-primary">
                                         <i class="tio-invisible"></i>
                                     </a>
                                 </div>
@@ -428,7 +428,7 @@
                 }
             });
             $.post({
-                url: '{{route('admin.report.store-summary-report-search',request()->getQueryString())}}',
+                url: '{{route('admin.transactions.report.store-summary-report-search',request()->getQueryString())}}',
                 data: formData,
                 cache: false,
                 contentType: false,

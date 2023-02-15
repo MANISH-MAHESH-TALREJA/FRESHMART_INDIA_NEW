@@ -33,10 +33,10 @@
                         <!-- Nav -->
                         <ul class="nav nav-tabs mb-3 border-0 nav--tabs">
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('admin.delivery-man.new') }}"   aria-disabled="true">{{translate('messages.pending_delivery_man')}}</a>
+                                <a class="nav-link active" href="{{ route('admin.users.delivery-man.new') }}"   aria-disabled="true">{{translate('messages.pending_delivery_man')}}</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.delivery-man.deny') }}"  aria-disabled="true">{{translate('messages.denied_deliveryman')}}</a>
+                                <a class="nav-link" href="{{ route('admin.users.delivery-man.deny') }}"  aria-disabled="true">{{translate('messages.denied_deliveryman')}}</a>
                             </li>
                         </ul>
                         <!-- End Nav -->
@@ -92,7 +92,7 @@
                         <tr>
                             <td>{{$key+$delivery_men->firstItem()}}</td>
                             <td>
-                                <a class="table-rest-info" href="{{route('admin.delivery-man.preview',[$dm['id']])}}">
+                                <a class="table-rest-info" href="{{route('admin.users.delivery-man.preview',[$dm['id']])}}">
                                     <img onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
                                             src="{{asset('storage/app/public/delivery-man')}}/{{$dm['image']}}" alt="{{$dm['f_name']}} {{$dm['l_name']}}">
                                     <div class="info">
@@ -145,12 +145,12 @@
                                     <div class="btn--container justify-content-end">
                                         <a class="btn action-btn btn--primary btn-outline-primary" data-toggle="tooltip" data-placement="top"
                                         data-original-title="{{ translate('messages.approve') }}"
-                                        onclick="request_alert('{{route('admin.delivery-man.application',[$dm['id'],'approved'])}}','{{translate('messages.you_want_to_approve_this_application')}}')"
+                                        onclick="request_alert('{{route('admin.users.delivery-man.application',[$dm['id'],'approved'])}}','{{translate('messages.you_want_to_approve_this_application')}}')"
                                             href="javascript:"><i class="tio-done font-weight-bold"></i> </a>
                                         @if($dm->application_status !='denied')
                                         <a class="btn action-btn btn--danger btn-outline-danger " data-toggle="tooltip" data-placement="top"
                                         data-original-title="{{ translate('messages.deny') }}"
-                                        onclick="request_alert('{{route('admin.delivery-man.application',[$dm['id'],'denied'])}}','{{translate('messages.you_want_to_deny_this_application')}}')"
+                                        onclick="request_alert('{{route('admin.users.delivery-man.application',[$dm['id'],'denied'])}}','{{translate('messages.you_want_to_deny_this_application')}}')"
                                             href="javascript:"><i class="tio-clear font-weight-bold"></i></a>
                                         @endif
                                     </div>

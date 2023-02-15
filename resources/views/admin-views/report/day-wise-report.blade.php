@@ -26,7 +26,7 @@
         <div class="card mb-20">
             <div class="card-body">
                 <h4 class="">{{ translate('Search Data') }}</h4>
-                <form action="{{ route('admin.report.set-date') }}" method="post">
+                <form action="{{ route('admin.transactions.report.set-date') }}" method="post">
                     @csrf
                     <div class="row g-3">
                         <div class="col-sm-6 col-md-3">
@@ -418,14 +418,14 @@
 
                             <span class="dropdown-header">{{ translate('download_options') }}</span>
                             <a id="export-excel" class="dropdown-item"
-                                href="{{ route('admin.report.day-wise-report-export', ['type' => 'excel', request()->getQueryString()]) }}">
+                                href="{{ route('admin.transactions.report.day-wise-report-export', ['type' => 'excel', request()->getQueryString()]) }}">
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin/svg/components/excel.svg') }}"
                                     alt="Image Description">
                                 {{ translate('messages.excel') }}
                             </a>
                             <a id="export-csv" class="dropdown-item"
-                                href="{{ route('admin.report.day-wise-report-export', ['type' => 'csv', request()->getQueryString()]) }}">
+                                href="{{ route('admin.transactions.report.day-wise-report-export', ['type' => 'csv', request()->getQueryString()]) }}">
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin/svg/components/placeholder-csv-format.svg') }}"
                                     alt="Image Description">
@@ -474,11 +474,11 @@
                                     <td>{{ $k + $order_transactions->firstItem() }}</td>
                                     @if ($ot->order->order_type == 'parcel')
                                         <td><a
-                                                href="{{ route('admin.parcel.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
+                                                href="{{ route('admin.transactions.parcel.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
                                         </td>
                                     @else
                                         <td><a
-                                                href="{{ route('admin.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
+                                                href="{{ route('admin.transactions.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
                                         </td>
                                     @endif
                                     <td  class="text-capitalize">
@@ -491,7 +491,7 @@
                                     <td class="white-space-nowrap">
                                         @if ($ot->order->customer)
                                             <a class="text-body text-capitalize"
-                                                href="{{ route('admin.customer.view', [$ot->order['user_id']]) }}">
+                                                href="{{ route('admin.users.customer.view', [$ot->order['user_id']]) }}">
                                                 <strong>{{ $ot->order->customer['f_name'] . ' ' . $ot->order->customer['l_name'] }}</strong>
                                             </a>
                                         @else
@@ -840,7 +840,7 @@
                 }
             });
             $.post({
-                url: '{{ route('admin.report.day-wise-report-search') }}',
+                url: '{{ route('admin.transactions.report.day-wise-report-search') }}',
                 data: formData,
                 cache: false,
                 contentType: false,

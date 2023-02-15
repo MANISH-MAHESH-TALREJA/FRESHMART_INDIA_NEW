@@ -26,20 +26,6 @@
                         </span>
                     </h1>
                 </div>
-                <div class="col-xl-2 col-md-3 col-sm-4">
-                    @if (!$parcel_order)
-                    <select name="zone_id" class="form-control js-select2-custom"
-                            onchange="set_filter('{{url()->full()}}',this.value,'module_id')" title="{{translate('messages.select')}} {{translate('messages.modules')}}">
-                        <option value="" {{!request('module_id') ? 'selected':''}}>{{translate('messages.all')}} {{translate('messages.modules')}}</option>
-                        @foreach (\App\Models\Module::notParcel()->get() as $module)
-                            <option
-                                value="{{$module->id}}" {{request('module_id') == $module->id?'selected':''}}>
-                                {{$module['module_name']}}
-                            </option>
-                        @endforeach
-                    </select>
-                    @endif
-                </div>
             </div>
             <!-- End Row -->
         </div>

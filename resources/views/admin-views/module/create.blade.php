@@ -24,7 +24,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{route('admin.module.store')}}" method="post" enctype="multipart/form-data">
+            <form action="{{route('admin.business-settings.module.store')}}" method="post" enctype="multipart/form-data">
                 @csrf
                 @php($language=\App\Models\BusinessSetting::where('key','language')->first())
                 @php($language = $language->value ?? null)

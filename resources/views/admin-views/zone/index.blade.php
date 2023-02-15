@@ -61,7 +61,7 @@
                                         for="exampleFormControlInput1">{{translate('messages.name')}}</label>
                                     <input type="text" name="name" id="name" class="form-control" placeholder="{{translate('messages.new_zone')}}" value="{{old('name')}}" required>
                                 </div>
-                                <div class="d-flex flex-wrap select--all-checkes">
+                                {{-- <div class="d-flex flex-wrap select--all-checkes">
                                     <h5 class="input-label m-0 text-capitalize">{{translate('messages.Payment Method')}} </h5>
                                 </div>
                                 <div class="check--item-wrapper mb-1">
@@ -79,7 +79,7 @@
                                             <label class="form-check-label qcont text-dark" for="digital_payment">{{translate('messages.digital payment')}}</label>
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="form-group mb-3 d-none">
                                     <label class="input-label"
                                         for="exampleFormControlInput1">{{ translate('Coordinates') }}<span class="input-label-secondary" title="{{translate('messages.draw_your_zone_on_the_map')}}">{{translate('messages.draw_your_zone_on_the_map')}}</span></label>
@@ -254,10 +254,10 @@
                                     <td>
                                         <div class="btn--container justify-content-center">
                                             <a class="btn action-btn btn--primary btn-outline-primary"
-                                                href="{{route('admin.zone.edit',[$zone['id']])}}" title="{{translate('messages.edit')}} {{translate('messages.zone')}}"><i class="tio-edit"></i>
+                                                href="{{route('admin.business-settings.zone.edit',[$zone['id']])}}" title="{{translate('messages.edit')}} {{translate('messages.zone')}}"><i class="tio-edit"></i>
                                             </a>
                                             <a class="btn action-btn btn--warning btn-outline-warning" title="Module Setup"
-                                                href="{{route('admin.zone.module-setup',[$zone['id']])}}"><i class="tio-settings"></i>
+                                                href="{{route('admin.business-settings.zone.module-setup',[$zone['id']])}}"><i class="tio-settings"></i>
                                             </a>
                                             <a class="btn action-btn btn--danger btn-outline-danger" href="javascript:"
                                             onclick="form_alert('zone-{{$zone['id']}}','{{ translate('Want to delete this zone ?') }}')" title="{{translate('messages.delete')}} {{translate('messages.zone')}}"><i class="tio-delete-outlined"></i>

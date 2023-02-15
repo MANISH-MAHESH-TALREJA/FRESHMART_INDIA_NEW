@@ -19,6 +19,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\DB;
 use App\Scopes\StoreScope;
 use App\Models\Translation;
+use Illuminate\Support\Facades\Config;
 
 class ItemController extends Controller
 {
@@ -38,7 +39,6 @@ class ItemController extends Controller
             'price' => 'required|numeric|between:.01,999999999999.99',
             'discount' => 'required|numeric|min:0',
             'store_id' => 'required',
-            'module_id' => 'required',
             'description.*' => 'max:1000',
         ], [
             'description.*.max' => translate('messages.description_length_warning'),
@@ -204,7 +204,7 @@ class ItemController extends Controller
         $item->add_ons = $request->has('addon_ids') ? json_encode($request->addon_ids) : json_encode([]);
         $item->store_id = $request->store_id;
         $item->veg = $request->veg;
-        $item->module_id = $request->module_id;
+        $item->module_id = Config::get('module.current_module_id');
         $item->stock = $request->current_stock ?? 0;
         $item->images = $images;
         $item->save();
@@ -641,6 +641,7 @@ class ItemController extends Controller
                     return $q->whereId($category_id)->orWhere('parent_id', $category_id);
                 });
             })
+            ->module(Config::get('module.current_module_id'))
             ->type($type)
             ->latest()->paginate(config('default_pagination'));
         $store = $store_id != 'all' ? Store::findOrFail($store_id) : null;
@@ -678,7 +679,7 @@ class ItemController extends Controller
             foreach ($key as $value) {
                 $q->where('name', 'like', "%{$value}%");
             }
-        })->limit(50)->get();
+        })->module(Config::get('module.current_module_id'))->limit(50)->get();
         return response()->json([
             'count' => count($items),
             'view' => view('admin-views.product.partials._table', compact('items'))->render()
@@ -687,9 +688,11 @@ class ItemController extends Controller
 
     public function review_list(Request $request)
     {
-        $reviews = Review::with(['item' => function ($query) {
-            $query->withoutGlobalScope(StoreScope::class);
-        }, 'customer'])->latest()->paginate(config('default_pagination'));
+        $reviews = Review::with(['item'=>function($query){
+            $query->withOutGlobalScope(StoreScope::class);
+        }, 'customer'])->whereHas('item', function ($q) use ($request) {
+            return $q->where('module_id', Config::get('module.current_module_id'))->withOutGlobalScope(StoreScope::class);
+        })->latest()->paginate(config('default_pagination'));   
         return view('admin-views.product.reviews-list', compact('reviews'));
     }
 
@@ -709,6 +712,8 @@ class ItemController extends Controller
             foreach ($key as $value) {
                 $query->where('name', 'like', "%{$value}%");
             }
+        })->whereHas('item', function ($q) use ($request) {
+            return $q->where('module_id', Config::get('module.current_module_id'))->withoutGlobalScope(StoreScope::class);
         })->limit(50)->get();
         return response()->json([
             'count' => count($reviews),
@@ -798,6 +803,7 @@ class ItemController extends Controller
             ->when($request['type'] == 'id_wise', function ($query) use ($request) {
                 $query->whereBetween('id', [$request['start_id'], $request['end_id']]);
             })
+            ->module(Config::get('module.current_module_id'))
             ->withoutGlobalScope(StoreScope::class)->get();
         return (new FastExcel(ProductLogic::format_export_items($products)))->download('Items.xlsx');
     }
@@ -890,6 +896,7 @@ class ItemController extends Controller
                     return $q->whereId($category_id)->orWhere('parent_id', $category_id);
                 });
             })
+            ->module(Config::get('module.current_module_id'))
             ->with('category', 'store')
             ->type($type)->latest()->get();
         if ($types == 'excel') {

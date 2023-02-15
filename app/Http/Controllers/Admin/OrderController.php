@@ -27,6 +27,7 @@ use App\Http\Controllers\Controller;
 use Brian2694\Toastr\Facades\Toastr;
 use Rap2hpoutre\FastExcel\FastExcel;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
+use Illuminate\Support\Facades\Config;
 
 class OrderController extends Controller
 {
@@ -111,6 +112,7 @@ class OrderController extends Controller
                 return $query->whereBetween('created_at', [$request->from_date . " 00:00:00", $request->to_date . " 23:59:59"]);
             })
             ->StoreOrder()
+            ->module(Config::get('module.current_module_id'))
             ->orderBy('schedule_at', 'desc')
             ->paginate(config('default_pagination'));
         $orderstatus = isset($request->orderStatus) ? $request->orderStatus : [];
@@ -126,7 +128,7 @@ class OrderController extends Controller
         return view('admin-views.order.list', compact('orders', 'status', 'orderstatus', 'scheduled', 'vendor_ids', 'zone_ids', 'from_date', 'to_date', 'total', 'order_type'));
     }
 
-    public function dispatch_list($status, Request $request)
+    public function dispatch_list($module,$status, Request $request)
     {
         $module_id = $request->query('module_id', null);
 
@@ -138,6 +140,9 @@ class OrderController extends Controller
         Order::where(['checked' => 0])->update(['checked' => 1]);
 
         $orders = Order::with(['customer', 'store'])
+            ->whereHas('module', function($query) use($module){
+                $query->where('id', $module);
+            })
             ->when(isset($module_id), function ($query) use ($module_id) {
                 return $query->module($module_id);
             })
@@ -173,7 +178,7 @@ class OrderController extends Controller
         $to_date = isset($request->to_date) ? $request->to_date : null;
         $total = $orders->total();
 
-        return view('admin-views.order.distaptch_list', compact('orders', 'status', 'orderstatus', 'scheduled', 'vendor_ids', 'zone_ids', 'from_date', 'to_date', 'total'));
+        return view('admin-views.order.distaptch_list', compact('orders','module', 'status', 'orderstatus', 'scheduled', 'vendor_ids', 'zone_ids', 'from_date', 'to_date', 'total'));
     }
 
     public function details(Request $request, $id)
@@ -188,7 +193,7 @@ class OrderController extends Controller
             return $query->withoutGlobalScope(StoreScope::class);
         }, 'details.campaign' => function ($query) {
             return $query->withoutGlobalScope(StoreScope::class);
-        }])->where(['id' => $id])->StoreOrder()->first();
+        }])->where(['id' => $id])->first();
         if (isset($order)) {
             if (isset($order->store)) {
                 $deliveryMen = DeliveryMan::where('zone_id', $order->store->zone_id)->available()->active()->get();
@@ -291,6 +296,7 @@ class OrderController extends Controller
     {
         $key = explode(' ', $request['search']);
         $parcel_order = $request->parcel_order ?? false;
+        $module_section_type = $request->module_section_type ?? false;
         $orders = Order::where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('id', 'like', "%{$value}%")
@@ -298,6 +304,9 @@ class OrderController extends Controller
                     ->orWhere('transaction_reference', 'like', "%{$value}%");
             }
         });
+        if ($module_section_type) {
+            $orders = $orders->module($module_section_type);
+        }
         if ($parcel_order) {
             $orders = $orders->withOutGlobalScope(ZoneScope::class)->ParcelOrder();
         } else {
@@ -1147,6 +1156,7 @@ class OrderController extends Controller
             ->when($type == 'parcel', function ($query) {
                 $query->ParcelOrder();
             })
+            ->module(Config::get('module.current_module_id'))
             ->orderBy('schedule_at', 'desc')
             ->get();
         if ($file_type == 'excel') {

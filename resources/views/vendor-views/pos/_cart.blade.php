@@ -83,7 +83,12 @@ if (session()->has('address') && count(session()->get('address')) > 0) {
 $total = $subtotal + $addon_price;
 $discount_amount = $discount_type == 'percent' && $discount > 0 ? (($total - $discount_on_product) * $discount) / 100 : $discount;
 $total -= $discount_amount + $discount_on_product;
+$tax_included = \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first() ?  \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
 $total_tax_amount = $tax > 0 ? ($total * $tax) / 100 : 0;
+
+if ($tax_included ==  1){
+    $total_tax_amount=0;
+}
 $total = $total + $delivery_fee;
 if (isset($cart['paid'])) {
     $paid = $cart['paid'];
@@ -102,7 +107,11 @@ if (isset($cart['paid'])) {
             <dt class="col-6 font-regular">{{ translate('messages.addon') }}:</dt>
             <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::format_currency($addon_price) }}</dd>
 
-            <dt class="col-6 font-regular">{{ translate('messages.subtotal') }}:</dt>
+            <dt class="col-6 font-regular">{{ translate('messages.subtotal') }}
+                @if ($tax_included ==  1)
+                ({{ translate('messages.TAX_Included') }})
+                @endif
+                :</dt>
             <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::format_currency($subtotal + $addon_price) }}</dd>
 
 
@@ -117,12 +126,13 @@ if (isset($cart['paid'])) {
             <dd class="col-6 text-right"><button class="btn btn-sm" type="button" data-toggle="modal"
                     data-target="#add-discount"><i class="tio-edit"></i></button>-
                 {{ \App\CentralLogics\Helpers::format_currency(round($discount_amount, 2)) }}</dd>
-
+                @if ($tax_included !=  1)
             <dt class="col-6 font-regular">{{ translate('messages.tax') }} : </dt>
             <dd class="col-6 text-right"><button class="btn btn-sm" type="button" data-toggle="modal"
                     data-target="#add-tax"><i
                         class="tio-edit"></i></button>{{ \App\CentralLogics\Helpers::format_currency(round($total_tax_amount, 2)) }}
             </dd>
+            @endif
             <dd class="col-12">
                 <hr class="m-0">
             </dd>

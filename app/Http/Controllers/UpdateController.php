@@ -30,7 +30,7 @@ class UpdateController extends Controller
         Helpers::setEnvironmentValue('BUYER_USERNAME', $request['username']);
         Helpers::setEnvironmentValue('PURCHASE_CODE', $request['purchase_key']);
         Helpers::setEnvironmentValue('APP_MODE', 'live');
-        Helpers::setEnvironmentValue('SOFTWARE_VERSION', '1.8.0');
+        Helpers::setEnvironmentValue('SOFTWARE_VERSION', '2.0.0');
         Helpers::setEnvironmentValue('APP_NAME', '6amMart' . time());
 
         // $data = Helpers::requestSender();
@@ -67,9 +67,10 @@ class UpdateController extends Controller
         Helpers::insert_business_settings_key("loyalty_point_item_purchase_point" , "0");
         Helpers::insert_business_settings_key("loyalty_point_minimum_point" , "0");
         Helpers::insert_business_settings_key("dm_tips_status" , "0");
-
+        Helpers::insert_business_settings_key('tax_included', '0');
         Helpers::insert_business_settings_key('refund_active_status', '1');
         Helpers::insert_business_settings_key('social_login','[{"login_medium":"google","client_id":"","client_secret":"","status":"0"},{"login_medium":"facebook","client_id":"","client_secret":"","status":""}]');
+        Helpers::insert_business_settings_key('system_language','[{"id":1,"direction":"ltr","code":"en","status":1,"default":true}]');
 
         return redirect('/admin/auth/login');
     }

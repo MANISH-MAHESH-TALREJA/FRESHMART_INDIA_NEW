@@ -15,11 +15,13 @@ use App\CentralLogics\CustomerLogic;
 use App\CentralLogics\ProductLogic;
 use App\Models\Store;
 use App\Mail\PlaceOrder;
+use App\Models\BusinessSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Scopes\StoreScope;
+use Illuminate\Support\Facades\Config;
 
 class POSController extends Controller
 {
@@ -27,9 +29,9 @@ class POSController extends Controller
     {
         $time = Carbon::now()->toTimeString();
         $category = $request->query('category_id', 0);
-        $module_id = $request->query('module_id', null);
+        $module_id = Config::get('module.current_module_id');
         $store_id = $request->query('store_id', null);
-        $categories = Category::active()->module($module_id)->get();
+        $categories = Category::active()->module(Config::get('module.current_module_id'))->get();
         $store = Store::active()->find($store_id);
         $keyword = $request->query('keyword', false);
         $key = explode(' ', $keyword);
@@ -594,12 +596,22 @@ class POSController extends Controller
 
         $total_price = $product_price + $total_addon_price - $store_discount_amount;
         $tax = isset($cart['tax'])?$cart['tax']:$store->tax;
-        $total_tax_amount= ($tax > 0)?(($total_price * $tax)/100):0;
+        // $total_tax_amount= ($tax > 0)?(($total_price * $tax)/100):0;
+
+        $order->tax_status = 'excluded';
+
+        $tax_included =BusinessSetting::where(['key'=>'tax_included'])->first() ?  BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
+        if ($tax_included ==  1){
+            $order->tax_status = 'included';
+        }
+
+        $total_tax_amount=Helpers::product_tax($total_price,$tax,$order->tax_status =='included');
+        $tax_a=$order->tax_status =='included'?0:$total_tax_amount;
 
         try {
             $order->store_discount_amount= $store_discount_amount;
             $order->total_tax_amount= $total_tax_amount;
-            $order->order_amount = $total_price + $total_tax_amount + $order->delivery_charge;
+            $order->order_amount = $total_price + $tax_a + $order->delivery_charge;
             $order->adjusment = $request->amount - ($total_price + $total_tax_amount + $order->delivery_charge);
             $order->payment_method = $request->type == 'wallet'?'wallet':'cash_on_delivery';
             if($request->type == 'wallet'){

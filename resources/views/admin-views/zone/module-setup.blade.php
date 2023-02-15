@@ -24,6 +24,25 @@
             @csrf
             <div class="row g-2">
                 <div class="col-12">
+                    <div class="d-flex flex-wrap select--all-checkes">
+                        <h5 class="input-label m-0 text-capitalize">{{translate('messages.Payment Method')}} </h5>
+                    </div>
+                    <div class="check--item-wrapper mb-1">
+                        <div class="check-item">
+                            <div class="form-group form-check form--check">
+                                <input type="checkbox" name="cash_on_delivery" value="cash_on_delivery" class="form-check-input"
+                                       id="cash_on_delivery" {{$zone->cash_on_delivery == 1 ?'checked':''}}>
+                                <label class="form-check-label qcont text-dark" for="cash_on_delivery">{{translate('messages.Cash On Delivery')}}</label>
+                            </div>
+                        </div>
+                        <div class="check-item">
+                            <div class="form-group form-check form--check">
+                                <input type="checkbox" name="digital_payment" value="digital_payment" class="form-check-input"
+                                       id="digital_payment" {{$zone->digital_payment == 1 ?'checked':''}}>
+                                <label class="form-check-label qcont text-dark" for="digital_payment">{{translate('messages.digital payment')}}</label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group mb-0">
                         <label class="input-label" for="exampleFormControlSelect1">{{ translate('messages.module') }}<span
                                 class="input-label-secondary"></span></label>

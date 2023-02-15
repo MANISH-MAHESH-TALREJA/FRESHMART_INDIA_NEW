@@ -15,6 +15,29 @@
                     {{ translate('messages.business') }} {{ translate('messages.setup') }}
                 </span>
             </h1>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="js-nav-scroller hs-nav-scroller-horizontal mt-2">
+                        <!-- Nav -->
+                        <ul class="nav nav-tabs mb-5 mt-5 border-0 nav--tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ route('admin.business-settings.business-setup',  ['tab' => 'business']) }}"   aria-disabled="true">{{translate('messages.business')}} {{translate('messages.settings')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.business-settings.business-setup',  ['tab' => 'customer']) }}"  aria-disabled="true">{{translate('messages.customers')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('admin.business-settings.business-setup',  ['tab' => 'deliveryman']) }}"  aria-disabled="true">{{translate('messages.delivery')}} {{translate('messages.man')}}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ Request::is('admin/business-settings/language') ?'active':'' }}" href="{{route('admin.business-settings.language.index')}}"  aria-disabled="true">{{translate('messages.Languages')}}</a>
+                            </li>
+                        </ul>
+                        <!-- End Nav -->
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- End Page Header -->
         <div class="card mb-3">
@@ -48,12 +71,14 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title"> <span class="card-header-icon mr-2"><i class="tio-user"></i></span>
-                                <span>{{ translate('general_information') }}</span></h4>
+                            <h4 class="card-title">
+                                <span class="card-header-icon mr-2"><i class="tio-user"></i></span>
+                                <span>{{ translate('Company Information') }}</span>
+                            </h4>
                         </div>
                         <div class="card-body">
-                            <div class="row g-3 mb-0">
-                                <div class="col-md-4">
+                            <div class="row g-3">
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     <div class="form-group mb-0">
                                         <label class="form-label"
                                             for="exampleFormControlInput1">{{ translate('messages.business') }}
@@ -63,17 +88,8 @@
                                             required>
                                     </div>
                                 </div>
-                                @php($phone = \App\Models\BusinessSetting::where('key', 'phone')->first())
-                                <div class="col-md-4">
-                                    <div class="form-group mb-0">
-                                        <label class="form-label"
-                                            for="exampleFormControlInput1">{{ translate('messages.phone') }}</label>
-                                        <input type="tel" value="{{ $phone->value ?? '' }}" name="phone"
-                                            class="form-control" placeholder="" required>
-                                    </div>
-                                </div>
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                 @php($email = \App\Models\BusinessSetting::where('key', 'email_address')->first())
-                                <div class="col-md-4">
                                     <div class="form-group mb-0">
                                         <label class="form-label"
                                             for="exampleFormControlInput1">{{ translate('messages.email') }}</label>
@@ -81,162 +97,18 @@
                                             class="form-control" placeholder="" required>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row g-3 mt-0">
-                                <div class="col-md-6">
-                                    @php($address = \App\Models\BusinessSetting::where('key', 'address')->first())
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            for="exampleFormControlInput1">{{ translate('messages.address') }}</label>
-                                        <textarea type="text" id="address" name="address" class="form-control" placeholder="" rows="1" required>{{ $address->value ?? '' }}</textarea>
-                                    </div>
-
-                                    @php($footer_text = \App\Models\BusinessSetting::where('key', 'footer_text')->first())
-                                    <div class="form-group">
-                                        <label class="form-label"
-                                            for="exampleFormControlInput1">{{ translate('messages.footer') }}
-                                            {{ translate('messages.text') }}</label>
-                                        <textarea type="text" value="" name="footer_text" class="form-control h--45"
-                                            placeholder="{{ translate('messages.Ex_:_Footer_Text') }}" required>{{ $footer_text->value ?? '' }}</textarea>
-                                    </div>
-                                    @php($default_location = \App\Models\BusinessSetting::where('key', 'default_location')->first())
-                                    @php($default_location = $default_location->value ? json_decode($default_location->value, true) : 0)
-                                    <div class="form-group">
-                                        <label class="form-label text-capitalize"
-                                            for="latitude">{{ translate('messages.latitude') }}<span
-                                                class="form-label-secondary" data-toggle="tooltip" data-placement="right"
-                                                data-original-title="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"><img
-                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                    alt="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"></span></label>
-                                        <input type="text" id="latitude" name="latitude" class="form-control"
-                                            placeholder="{{ translate('messages.Ex:') }} -94.22213"
-                                            value="{{ $default_location ? $default_location['lat'] : 0 }}" required
-                                            readonly>
-                                    </div>
-                                    <div class="form-group mb-0">
-                                        <label class="form-label text-capitalize"
-                                            for="longitude">{{ translate('messages.longitude') }}<span
-                                                class="form-label-secondary" data-toggle="tooltip" data-placement="right"
-                                                data-original-title="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"><img
-                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                    alt="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"></span></label>
-                                        <input type="text" name="longitude" class="form-control"
-                                            placeholder="{{ translate('messages.Ex:') }} 103.344322" id="longitude"
-                                            value="{{ $default_location ? $default_location['lng'] : 0 }}" required
-                                            readonly>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <input id="pac-input" class="controls rounded" data-toggle="tooltip"
-                                        data-placement="right"
-                                        data-original-title="{{ translate('messages.search_your_location_here') }}"
-                                        type="text" placeholder="{{ translate('messages.search_here') }}" />
-                                    <div id="location_map_canvas" class="overflow-hidden rounded"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i
-                                        class="tio-neighborhood"></i></span>
-                                <span>{{ translate('business_information') }}</span></h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3 mb-0">
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($logo = \App\Models\BusinessSetting::where('key', 'logo')->first())
-                                    @php($logo = $logo->value ?? '')
-                                    <div class="d-flex flex-column h-100">
-                                        <label class="form-label mb-0">
-                                            {{ translate('messages.logo') }}
-                                            <small class="text-danger">* ( {{ translate('messages.ratio') }} 300x100
-                                                )</small>
-                                        </label>
-                                        <center class="py-3 my-auto">
-                                            <img class="img--vertical" id="viewer"
-                                                onerror="this.src='{{ asset('public/assets/admin/img/160x160/img2.jpg') }}'"
-                                                src="{{ asset('storage/app/public/business/' . $logo) }}"
-                                                alt="logo image" />
-                                        </center>
-                                        <div class="custom-file">
-                                            <input type="file" name="logo" id="customFileEg1"
-                                                class="custom-file-input"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
-                                            <label class="custom-file-label"
-                                                for="customFileEg1">{{ translate('messages.choose') }}
-                                                {{ translate('messages.file') }}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($icon = \App\Models\BusinessSetting::where('key', 'icon')->first())
-                                    @php($icon = $icon->value ?? '')
-                                    <div class="d-flex flex-column h-100">
-                                        <label class="form-label mb-0">
-                                            {{ translate('messages.Fav Icon') }}
-                                            <small class="text-danger">* ( {{ translate('messages.ratio') }} 200x200
-                                                )</small>
-                                        </label>
-                                        <center class="py-3 my-auto">
-                                            <img class="img--110" id="iconViewer"
-                                                onerror="this.src='{{ asset('public/assets/admin/img/160x160/img2.jpg') }}'"
-                                                src="{{ asset('storage/app/public/business/' . $icon) }}"
-                                                alt="Fav icon" />
-                                        </center>
-                                        <div class="custom-file">
-                                            <input type="file" name="icon" id="favIconUpload"
-                                                class="custom-file-input"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
-                                            <label class="custom-file-label"
-                                                for="favIconUpload">{{ translate('messages.choose') }}
-                                                {{ translate('messages.file') }}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row g-3 mt-0">
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($currency_code = \App\Models\BusinessSetting::where('key', 'currency')->first())
+                                <div class="col-sm-6 col-md-4 col-xl-3">
+                                @php($phone = \App\Models\BusinessSetting::where('key', 'phone')->first())
                                     <div class="form-group mb-0">
                                         <label class="form-label"
-                                            for="exampleFormControlInput1">{{ translate('messages.currency') }}</label>
-                                        <select name="currency" class="form-control js-select2-custom">
-                                            @foreach (\App\Models\Currency::orderBy('currency_code')->get() as $currency)
-                                                <option value="{{ $currency['currency_code'] }}"
-                                                    {{ $currency_code ? ($currency_code->value == $currency['currency_code'] ? 'selected' : '') : '' }}>
-                                                    {{ $currency['currency_code'] }} ( {{ $currency['currency_symbol'] }}
-                                                    )
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            for="exampleFormControlInput1">{{ translate('messages.phone') }}</label>
+                                        <input type="tel" value="{{ $phone->value ?? '' }}" name="phone"
+                                            class="form-control" placeholder="" required>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($currency_symbol_position = \App\Models\BusinessSetting::where('key', 'currency_symbol_position')->first())
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     <div class="form-group mb-0">
                                         <label class="form-label text-capitalize"
-                                            for="currency_symbol_position">{{ translate('messages.currency_symbol_positon') }}</label>
-                                        <select name="currency_symbol_position" class="form-control js-select2-custom"
-                                            id="currency_symbol_position">
-                                            <option value="left"
-                                                {{ $currency_symbol_position ? ($currency_symbol_position->value == 'left' ? 'selected' : '') : '' }}>
-                                                {{ translate('messages.left') }}
-                                                ({{ \App\CentralLogics\Helpers::currency_symbol() }}123)
-                                            </option>
-                                            <option value="right"
-                                                {{ $currency_symbol_position ? ($currency_symbol_position->value == 'right' ? 'selected' : '') : '' }}>
-                                                {{ translate('messages.right') }}
-                                                (123{{ \App\CentralLogics\Helpers::currency_symbol() }})
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-4">
-                                    <div class="form-group mb-0">
-                                        <label class="form-label text-capitalize d-inline"
                                             for="country">{{ translate('messages.country') }}</label>
                                         <select id="country" name="country" class="form-control  js-select2-custom">
                                             <option value="AF">Afghanistan</option>
@@ -491,7 +363,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
+                                {{--<div class="col-sm-6 col-md-4 col-xl-3">
                                     <div class="form-group mb-0">
                                         <label class="form-label"
                                             for="exampleFormControlInput1">{{ translate('messages.language') }} </label>
@@ -646,8 +518,8 @@
                                             <option value="zu">Zulu - isiZulu</option>
                                         </select>
                                     </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-4">
+                                </div>--}}
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     @php($tz = \App\Models\BusinessSetting::where('key', 'timezone')->first())
                                     @php($tz = $tz ? $tz->value : 0)
                                     <div class="form-group mb-0">
@@ -918,7 +790,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     @php($tf = \App\Models\BusinessSetting::where('key', 'timeformat')->first())
                                     @php($tf = $tf ? $tf->value : '24')
                                     <div class="form-group mb-0">
@@ -934,8 +806,43 @@
                                         </select>
                                     </div>
                                 </div>
-
-                                <div class="col-sm-6 col-lg-4">
+                                <div class="col-sm-6 col-md-4 col-xl-3">
+                                    @php($currency_code = \App\Models\BusinessSetting::where('key', 'currency')->first())
+                                    <div class="form-group mb-0">
+                                        <label class="form-label"
+                                            for="exampleFormControlInput1">{{ translate('Currency Symbol') }}</label>
+                                        <select name="currency" class="form-control js-select2-custom">
+                                            @foreach (\App\Models\Currency::orderBy('currency_code')->get() as $currency)
+                                                <option value="{{ $currency['currency_code'] }}"
+                                                    {{ $currency_code ? ($currency_code->value == $currency['currency_code'] ? 'selected' : '') : '' }}>
+                                                    {{ $currency['currency_code'] }} ( {{ $currency['currency_symbol'] }}
+                                                    )
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-4 col-xl-3">
+                                    @php($currency_symbol_position = \App\Models\BusinessSetting::where('key', 'currency_symbol_position')->first())
+                                    <div class="form-group mb-0">
+                                        <label class="form-label text-capitalize"
+                                            for="currency_symbol_position">{{ translate('Currency Position') }}</label>
+                                        <select name="currency_symbol_position" class="form-control js-select2-custom"
+                                            id="currency_symbol_position">
+                                            <option value="left"
+                                                {{ $currency_symbol_position ? ($currency_symbol_position->value == 'left' ? 'selected' : '') : '' }}>
+                                                {{ translate('messages.left') }}
+                                                ({{ \App\CentralLogics\Helpers::currency_symbol() }}123)
+                                            </option>
+                                            <option value="right"
+                                                {{ $currency_symbol_position ? ($currency_symbol_position->value == 'right' ? 'selected' : '') : '' }}>
+                                                {{ translate('messages.right') }}
+                                                (123{{ \App\CentralLogics\Helpers::currency_symbol() }})
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     @php($digit_after_decimal_point = \App\Models\BusinessSetting::where('key', 'digit_after_decimal_point')->first())
                                     <div class="form-group mb-0">
                                         <label class="form-label text-capitalize"
@@ -946,103 +853,96 @@
                                             min="0" max="4" required>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     @php($admin_commission = \App\Models\BusinessSetting::where('key', 'admin_commission')->first())
                                     <div class="form-group mb-0">
                                         <label class="form-label text-capitalize"
-                                            for="admin_commission">{{ translate('messages.default_admin_commission') }}</label>
+                                            for="admin_commission">{{ translate('Default Commission on Order') }}</label>
                                         <input type="number" name="admin_commission" class="form-control"
                                             id="admin_commission"
                                             value="{{ $admin_commission ? $admin_commission->value : 0 }}"
                                             min="0" max="100" required>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
+                                <div class="col-sm-6 col-md-4 col-xl-3">
                                     @php($delivery_charge_comission = \App\Models\BusinessSetting::where('key', 'delivery_charge_comission')->first())
-                                    <div class="form-group">
+                                    <div class="form-group mb-0">
                                         <label class="input-label text-capitalize d-flex alig-items-center"
-                                        for="admin_comission_in_delivery_charge">{{translate('Admin Comission in Delivery Charge')}}</label>
+                                        for="admin_comission_in_delivery_charge">{{translate('Commission on Delivery Charge')}}</label>
                                             <input type="number" name="admin_comission_in_delivery_charge" class="form-control" id="admin_comission_in_delivery_charge"
                                             min="0" max="100" step="0.01" value="{{ $delivery_charge_comission ? $delivery_charge_comission->value: 0 }}">
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-3">
-                                    @php($opening_time = \App\Models\BusinessSetting::where('key', 'opening_time')->first())
-                                    <div class="form-group">
-                                        <label class="input-label text-capitalize d-flex alig-items-center"
-                                        for="opening_time">{{translate('Opening Time')}}</label>
-                                            <input type="time" value="{{ $opening_time ? $opening_time->value: '' }}" name="opening_time" class="form-control" id="opening_time">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title"> <span class="card-header-icon mr-2"><i class="tio-poi"></i></span>
+                                <span>{{ translate('Company Location') }}</span></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mt-0">
+                                <div class="col-md-6">
+                                    <div class="row g-3">
+                                        <div class="col-sm-12">
+                                            @php($address = \App\Models\BusinessSetting::where('key', 'address')->first())
+                                            <div class="form-group mb-0">
+                                                <label class="form-label"
+                                                    for="exampleFormControlInput1">{{ translate('messages.address') }}</label>
+                                                <textarea type="text" id="address" name="address" class="form-control h--70px" placeholder="" rows="1" required>{{ $address->value ?? '' }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @php($default_location = \App\Models\BusinessSetting::where('key', 'default_location')->first())
+                                            @php($default_location = $default_location->value ? json_decode($default_location->value, true) : 0)
+                                            <div class="form-group mb-0">
+                                                <label class="form-label text-capitalize"
+                                                    for="latitude">{{ translate('messages.latitude') }}<span
+                                                        class="form-label-secondary" data-toggle="tooltip" data-placement="right"
+                                                        data-original-title="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"><img
+                                                            src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                            alt="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"></span></label>
+                                                <input type="text" id="latitude" name="latitude" class="form-control"
+                                                    placeholder="{{ translate('messages.Ex:') }} -94.22213"
+                                                    value="{{ $default_location ? $default_location['lat'] : 0 }}" required
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="form-group mb-0">
+                                                <label class="form-label text-capitalize"
+                                                    for="longitude">{{ translate('messages.longitude') }}<span
+                                                        class="form-label-secondary" data-toggle="tooltip" data-placement="right"
+                                                        data-original-title="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"><img
+                                                            src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                            alt="{{ translate('messages.click_on_the_map_select_your_defaul_location') }}"></span></label>
+                                                <input type="text" name="longitude" class="form-control"
+                                                    placeholder="{{ translate('messages.Ex:') }} 103.344322" id="longitude"
+                                                    value="{{ $default_location ? $default_location['lng'] : 0 }}" required
+                                                    readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12">
+                                            @php($footer_text = \App\Models\BusinessSetting::where('key', 'footer_text')->first())
+                                            <div class="form-group mb-0">
+                                                <label class="form-label"
+                                                    for="exampleFormControlInput1">{{ translate('messages.footer') }}
+                                                    {{ translate('messages.text') }}</label>
+                                                <textarea type="text" value="" name="footer_text" class="form-control h--45"
+                                                    placeholder="{{ translate('messages.Ex_:_Footer_Text') }}" required>{{ $footer_text->value ?? '' }}</textarea>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-3">
-                                    @php($closing_time = \App\Models\BusinessSetting::where('key', 'closing_time')->first())
-                                    <div class="form-group">
-                                        <label class="input-label text-capitalize d-flex alig-items-center"
-                                        for="closing_time">{{translate('Closing Time')}}</label>
-                                        <input type="time" value="{{ $closing_time ? $closing_time->value: '' }}" name="closing_time" class="form-control" id="closing_time">
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-3">
-                                    @php($opening_day = \App\Models\BusinessSetting::where('key', 'opening_day')->first())
-                                    @php($opening_day = $opening_day ? $opening_day->value : '')
-                                    <div class="form-group mb-0">
-                                        <label
-                                            class="form-label text-capitalize">{{ translate('messages.opening_day') }}</label>
-                                        <select name="opening_day" class="form-control">
-                                            <option value="saturday" {{ $opening_day == 'saturday' ? 'selected' : '' }}>
-                                                {{ translate('messages.saturday') }}
-                                            </option>
-                                            <option value="sunday" {{ $opening_day == 'sunday' ? 'selected' : '' }}>
-                                                {{ translate('messages.sunday') }}
-                                            </option>
-                                            <option value="monday" {{ $opening_day == 'monday' ? 'selected' : '' }}>
-                                                {{ translate('messages.monday') }}
-                                            </option>
-                                            <option value="tuesday" {{ $opening_day == 'tuesday' ? 'selected' : '' }}>
-                                                {{ translate('messages.tuesday') }}
-                                            </option>
-                                            <option value="wednesday" {{ $opening_day == 'wednesday' ? 'selected' : '' }}>
-                                                {{ translate('messages.wednesday') }}
-                                            </option>
-                                            <option value="thrusday" {{ $opening_day == 'thrusday' ? 'selected' : '' }}>
-                                                {{ translate('messages.thrusday') }}
-                                            </option>
-                                            <option value="friday" {{ $opening_day == 'friday' ? 'selected' : '' }}>
-                                                {{ translate('messages.friday') }}
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-3">
-                                    @php($closing_day = \App\Models\BusinessSetting::where('key', 'closing_day')->first())
-                                    @php($closing_day = $closing_day ? $closing_day->value : '')
-                                    <div class="form-group mb-0">
-                                        <label
-                                            class="form-label text-capitalize">{{ translate('messages.closing_day') }}</label>
-                                        <select name="closing_day" class="form-control">
-                                            <option value="saturday" {{ $closing_day == 'saturday' ? 'selected' : '' }}>
-                                                {{ translate('messages.saturday') }}
-                                            </option>
-                                            <option value="sunday" {{ $closing_day == 'sunday' ? 'selected' : '' }}>
-                                                {{ translate('messages.sunday') }}
-                                            </option>
-                                            <option value="monday" {{ $closing_day == 'monday' ? 'selected' : '' }}>
-                                                {{ translate('messages.monday') }}
-                                            </option>
-                                            <option value="tuesday" {{ $closing_day == 'tuesday' ? 'selected' : '' }}>
-                                                {{ translate('messages.tuesday') }}
-                                            </option>
-                                            <option value="wednesday" {{ $closing_day == 'wednesday' ? 'selected' : '' }}>
-                                                {{ translate('messages.wednesday') }}
-                                            </option>
-                                            <option value="thrusday" {{ $closing_day == 'thrusday' ? 'selected' : '' }}>
-                                                {{ translate('messages.thrusday') }}
-                                            </option>
-                                            <option value="friday" {{ $closing_day == 'friday' ? 'selected' : '' }}>
-                                                {{ translate('messages.friday') }}
-                                            </option>
-                                        </select>
-                                    </div>
+                                <div class="col-md-6">
+                                    <input id="pac-input" class="controls rounded" data-toggle="tooltip"
+                                        data-placement="right"
+                                        data-original-title="{{ translate('messages.search_your_location_here') }}"
+                                        type="text" placeholder="{{ translate('messages.search_here') }}" />
+                                    <div id="location_map_canvas" class="overflow-hidden rounded"></div>
                                 </div>
                             </div>
                         </div>
@@ -1053,7 +953,7 @@
                         <div class="card-header">
                             <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i
                                         class="tio-neighborhood"></i></span>
-                                <span>{{ translate('business_setting') }}</span></h4>
+                                <span>{{ translate('business_information') }}</span></h4>
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
@@ -1078,60 +978,6 @@
                                             <input type="checkbox" class="toggle-switch-input" value="1"
                                                 name="schedule_order" id="schedule_order"
                                                 {{ $schedule_order == 1 ? 'checked' : '' }}>
-                                            <span class="toggle-switch-label text">
-                                                <span class="toggle-switch-indicator"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($dm_tips_status = \App\Models\BusinessSetting::where('key', 'dm_tips_status')->first())
-                                    @php($dm_tips_status = $dm_tips_status ? $dm_tips_status->value : 'deliveryman')
-                                    <div class="form-group mb-0">
-
-                                        <label
-                                            class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
-                                            <span class="pr-1 d-flex align-items-center switch--label">
-                                                <span class="line--limit-1">
-                                                    {{ translate('dm_tips_status') }}
-                                                </span>
-                                                <span class="form-label-secondary text-danger d-flex"
-                                                    data-toggle="tooltip" data-placement="right"
-                                                    data-original-title="{{ translate('If this option is enabled, the Delivery men Tip option will show on the user app & web app during order placement.') }}"><img
-                                                        src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                        alt="{{ translate('messages.dm_tips_model_hint') }}"> * </span>
-                                            </span>
-                                            <input type="checkbox" class="toggle-switch-input" value="1"
-                                                name="dm_tips_status" id="dm_tips_status"
-                                                {{ $dm_tips_status == '1' ? 'checked' : '' }}>
-                                            <span class="toggle-switch-label text">
-                                                <span class="toggle-switch-indicator"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($show_dm_earning = \App\Models\BusinessSetting::where('key', 'show_dm_earning')->first())
-                                    @php($show_dm_earning = $show_dm_earning ? $show_dm_earning->value : 0)
-                                    <div class="form-group mb-0">
-
-                                        <label
-                                            class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
-                                            <span class="pr-1 d-flex align-items-center switch--label">
-                                                <span class="line--limit-1">
-                                                    {{ translate('show_earning_for_each_order') }}
-                                                </span>
-                                                <span class="form-label-secondary text-danger d-flex"
-                                                    data-toggle="tooltip" data-placement="right"
-                                                    data-original-title="{{ translate('If this field is enabled, the delivery man is able to see the earnings when accepting the order on the order request page.') }}"><img
-                                                        src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                        alt="{{ translate('messages.customer_varification_toggle') }}"> *
-                                                </span>
-                                            </span>
-                                            <input type="checkbox" class="toggle-switch-input" value="1"
-                                                name="show_dm_earning" id="show_dm_earning"
-                                                {{ $show_dm_earning == 1 ? 'checked' : '' }}>
                                             <span class="toggle-switch-label text">
                                                 <span class="toggle-switch-indicator"></span>
                                             </span>
@@ -1167,35 +1013,6 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-lg-4">
-                                    @php($ev = \App\Models\BusinessSetting::where('key', 'customer_verification')->first())
-                                    @php($ev = $ev ? $ev->value : 0)
-                                    <div class="form-group mb-0">
-
-                                        <label
-                                            class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
-                                            <span class="pr-1 d-flex align-items-center switch--label">
-                                                <span class="line--limit-1">
-                                                    {{ translate('messages.customer') }}
-                                                    {{ translate('messages.verification') }}
-                                                </span>
-                                                <span class="form-label-secondary text-danger d-flex"
-                                                    data-toggle="tooltip" data-placement="right"
-                                                    data-original-title="{{ translate('messages.customer_varification_toggle') }}"><img
-                                                        src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                        alt="{{ translate('messages.customer_varification_toggle') }}"> *
-                                                </span>
-                                            </span>
-                                            <input type="checkbox" class="toggle-switch-input" value="1"
-                                                name="customer_verification" id="ev1"
-                                                {{ $ev == 1 ? 'checked' : '' }}>
-                                            <span class="toggle-switch-label text">
-                                                <span class="toggle-switch-indicator"></span>
-                                            </span>
-                                        </label>
-
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 col-lg-4">
                                     @php($odc = \App\Models\BusinessSetting::where('key', 'order_delivery_verification')->first())
                                     @php($odc = $odc ? $odc->value : 0)
                                     <div class="form-group mb-0">
@@ -1217,6 +1034,34 @@
                                             </span>
                                             <input type="checkbox" class="toggle-switch-input" value="1"
                                                 name="odc" id="odc1" {{ $odc == 1 ? 'checked' : '' }}>
+                                            <span class="toggle-switch-label text">
+                                                <span class="toggle-switch-indicator"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-4">
+                                    @php($ev = \App\Models\BusinessSetting::where('key', 'customer_verification')->first())
+                                    @php($ev = $ev ? $ev->value : 0)
+                                    <div class="form-group mb-0">
+
+                                        <label
+                                            class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
+                                            <span class="pr-1 d-flex align-items-center switch--label">
+                                                <span class="line--limit-1">
+                                                    {{ translate('messages.customer') }}
+                                                    {{ translate('messages.verification') }}
+                                                </span>
+                                                <span class="form-label-secondary text-danger d-flex"
+                                                    data-toggle="tooltip" data-placement="right"
+                                                    data-original-title="{{ translate('messages.customer_varification_toggle') }}"><img
+                                                        src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                        alt="{{ translate('messages.customer_varification_toggle') }}"> *
+                                                </span>
+                                            </span>
+                                            <input type="checkbox" class="toggle-switch-input" value="1"
+                                                name="customer_verification" id="ev1"
+                                                {{ $ev == 1 ? 'checked' : '' }}>
                                             <span class="toggle-switch-label text">
                                                 <span class="toggle-switch-indicator"></span>
                                             </span>
@@ -1330,14 +1175,27 @@
                                         </label>
                                     </div>
                                 </div>
-                                
+                                <div class="col-lg-4 col-sm-6">
+                                    @php($tax_included = \App\Models\BusinessSetting::where('key', 'tax_included')->first())
+                                    @php($tax_included = $tax_included ? $tax_included->value : 0)
+                                    <div class="form-group mb-0">
+                                        <label class="toggle-switch toggle-switch-sm d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ translate('Include_TAX_Amount') }}</span><span class="input-label-secondary text--title" data-toggle="tooltip" data-placement="right" data-original-title="{{translate('When this field is active, Tax amount will not be added with the total product price')}}">
+                                            <i class="tio-info-outined"></i>
+                                            </span></span>
+                                            <input type="checkbox" class="toggle-switch-input" value="1" name="tax_included"
+                                            {{ $tax_included == 1 ? 'checked' : '' }}>
+                                            <span class="toggle-switch-label text">
+                                                <span class="toggle-switch-indicator"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
 
-                            </div>
-                            <div class="row mt-3 g-3">
                                 <div class="col-lg-4 col-sm-6">
                                     @php($order_confirmation_model = \App\Models\BusinessSetting::where('key', 'order_confirmation_model')->first())
                                     @php($order_confirmation_model = $order_confirmation_model ? $order_confirmation_model->value : 'deliveryman')
-                                    <div class="form-group">
+                                    <div class="form-group mb-0">
                                         <label class="input-label text-capitalize d-flex alig-items-center"><span
                                                 class="line--limit-1">{{ translate('messages.order_confirmation_model') }}</span>
                                             <span class="input-label-secondary text--title" data-toggle="tooltip"
@@ -1366,40 +1224,9 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-sm-6">
-                                    @php($canceled_by_deliveryman = \App\Models\BusinessSetting::where('key', 'canceled_by_deliveryman')->first())
-                                    @php($canceled_by_deliveryman = $canceled_by_deliveryman ? $canceled_by_deliveryman->value : 0)
-                                    <div class="form-group">
-                                        <label class="input-label text-capitalize d-flex alig-items-center"><span
-                                                class="line--limit-1">{{ translate('Delivery Man can Cancel Order') }}</span>
-                                            <span class="input-label-secondary text--title" data-toggle="tooltip"
-                                                data-placement="right"
-                                                data-original-title="{{ translate('Order cancellation is possible by the delivery person if "Yes" is chosen .') }}">
-                                                <i class="tio-info-outined"></i>
-                                            </span></label>
-                                        <div class="resturant-type-group border">
-                                            <label class="form-check form--check mr-2 mr-md-4">
-                                                <input class="form-check-input" type="radio" value="1"
-                                                    name="canceled_by_deliveryman" id="canceled_by_deliveryman"
-                                                    {{ $canceled_by_deliveryman == 1 ? 'checked' : '' }}>
-                                                <span class="form-check-label">
-                                                    {{ translate('yes') }}
-                                                </span>
-                                            </label>
-                                            <label class="form-check form--check mr-2 mr-md-4">
-                                                <input class="form-check-input" type="radio" value="0"
-                                                    name="canceled_by_deliveryman" id="canceled_by_deliveryman2"
-                                                    {{ $canceled_by_deliveryman == 0 ? 'checked' : '' }}>
-                                                <span class="form-check-label">
-                                                    {{ translate('no') }}
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-4 col-sm-6">
                                     @php($canceled_by_store = \App\Models\BusinessSetting::where('key', 'canceled_by_store')->first())
                                     @php($canceled_by_store = $canceled_by_store ? $canceled_by_store->value : 0)
-                                    <div class="form-group">
+                                    <div class="form-group mb-0">
                                         <label class="input-label text-capitalize d-flex alig-items-center"><span
                                                 class="line--limit-1">{{ translate('store_can_cancel_order') }}
                                             </span><span class="input-label-secondary text--title" data-toggle="tooltip"
@@ -1443,7 +1270,7 @@
                                     @php($free_delivery_over = \App\Models\BusinessSetting::where('key', 'free_delivery_over')->first())
                                     @php($free_delivery_over_status = \App\Models\BusinessSetting::where('key', 'free_delivery_over_status')->first())
                                     <div class="form-group mb-0">
-                                        <label class="form-label d-flex justify-content-between text-capitalize"
+                                        <label class="form-label d-flex justify-content-between text-capitalize mb-1"
                                             for="free_delivery_over_status">
                                             <span class="line--limit-1">{{ translate('messages.free_delivery_over') }}
                                                 ({{ \App\CentralLogics\Helpers::currency_symbol() }}) <small
@@ -1492,24 +1319,140 @@
                                             required>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-lg-4">
-                                    @php($dm_maximum_orders = \App\Models\BusinessSetting::where('key', 'dm_maximum_orders')->first())
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i
+                                        class="tio-poi"></i></span>
+                                <span>{{ translate('Logo & Icon') }}</span></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-around __gap-12px">
+                                <label class="__custom-upload-img">
+                                    @php($logo = \App\Models\BusinessSetting::where('key', 'logo')->first())
+                                    @php($logo = $logo->value ?? '')
+                                    <h5 class="mb-2 text-center">
+                                        {{ translate('messages.logo') }}
+                                    </h5>
+                                    <center>
+                                        <img class="img--vertical" id="viewer"
+                                            onerror="this.src='{{ asset('public/assets/admin/img/upload-img.png') }}'"
+                                            src="{{ asset('storage/app/public/business/' . $logo) }}"
+                                            alt="logo image" />
+                                    </center>
+                                    <input type="file" name="logo" id="customFileEg1"
+                                        class="custom-file-input"
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                </label>
+                                <label class="__custom-upload-img">
+                                    @php($icon = \App\Models\BusinessSetting::where('key', 'icon')->first())
+                                    @php($icon = $icon->value ?? '')
+                                    <h5 class="mb-2 text-center">
+                                        {{ translate('Fav Icon') }}
+                                    </h5>
+                                    <center>
+                                        <img class="img--110" id="iconViewer"
+                                            onerror="this.src='{{ asset('public/assets/admin/img/upload-img.png') }}'"
+                                            src="{{ asset('storage/app/public/business/' . $icon) }}"
+                                            alt="Fav icon" />
+                                    </center>
+                                    <input type="file" name="icon" id="favIconUpload"
+                                        class="custom-file-input"
+                                        accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i
+                                        class="tio-poi"></i></span>
+                                <span>{{ translate('Office Opening & Closing') }}</span></h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    @php($opening_time = \App\Models\BusinessSetting::where('key', 'opening_time')->first())
                                     <div class="form-group mb-0">
-                                        <label class="form-label text-capitalize"
-                                            for="dm_maximum_orders">
-                                            <div class="d-flex align-items-center">
-                                                <span class="line--limit-1 w-0 flex-grow">{{ translate('messages.dm_maximum_order') }} </span> <small
-                                                class="text-danger d-flex align-items-center mt-1">*<span class="form-label-secondary"
-                                                    data-toggle="tooltip" data-placement="right"
-                                                    data-original-title="{{ translate('messages.dm_maximum_order_hint') }}"><img
-                                                        src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                        alt="{{ translate('messages.dm_maximum_order_hint') }}"></span>
-                                                </small>
-                                            </div>
-                                        </label>
-                                        <input type="number" name="dm_maximum_orders" class="form-control"
-                                            id="dm_maximum_orders" min="1"
-                                            value="{{ $dm_maximum_orders ? $dm_maximum_orders->value : 1 }}" required>
+                                        <label class="input-label text-capitalize d-flex alig-items-center"
+                                        for="opening_time">{{translate('Opening Time')}}</label>
+                                            <input type="time" value="{{ $opening_time ? $opening_time->value: '' }}" name="opening_time" class="form-control" id="opening_time">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    @php($closing_time = \App\Models\BusinessSetting::where('key', 'closing_time')->first())
+                                    <div class="form-group mb-0">
+                                        <label class="input-label text-capitalize d-flex alig-items-center"
+                                        for="closing_time">{{translate('Closing Time')}}</label>
+                                        <input type="time" value="{{ $closing_time ? $closing_time->value: '' }}" name="closing_time" class="form-control" id="closing_time">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    @php($opening_day = \App\Models\BusinessSetting::where('key', 'opening_day')->first())
+                                    @php($opening_day = $opening_day ? $opening_day->value : '')
+                                    <div class="form-group mb-0">
+                                        <label
+                                            class="form-label text-capitalize">{{ translate('messages.opening_day') }}</label>
+                                        <select name="opening_day" class="form-control">
+                                            <option value="saturday" {{ $opening_day == 'saturday' ? 'selected' : '' }}>
+                                                {{ translate('messages.saturday') }}
+                                            </option>
+                                            <option value="sunday" {{ $opening_day == 'sunday' ? 'selected' : '' }}>
+                                                {{ translate('messages.sunday') }}
+                                            </option>
+                                            <option value="monday" {{ $opening_day == 'monday' ? 'selected' : '' }}>
+                                                {{ translate('messages.monday') }}
+                                            </option>
+                                            <option value="tuesday" {{ $opening_day == 'tuesday' ? 'selected' : '' }}>
+                                                {{ translate('messages.tuesday') }}
+                                            </option>
+                                            <option value="wednesday" {{ $opening_day == 'wednesday' ? 'selected' : '' }}>
+                                                {{ translate('messages.wednesday') }}
+                                            </option>
+                                            <option value="thrusday" {{ $opening_day == 'thrusday' ? 'selected' : '' }}>
+                                                {{ translate('messages.thrusday') }}
+                                            </option>
+                                            <option value="friday" {{ $opening_day == 'friday' ? 'selected' : '' }}>
+                                                {{ translate('messages.friday') }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    @php($closing_day = \App\Models\BusinessSetting::where('key', 'closing_day')->first())
+                                    @php($closing_day = $closing_day ? $closing_day->value : '')
+                                    <div class="form-group mb-0">
+                                        <label
+                                            class="form-label text-capitalize">{{ translate('messages.closing_day') }}</label>
+                                        <select name="closing_day" class="form-control">
+                                            <option value="saturday" {{ $closing_day == 'saturday' ? 'selected' : '' }}>
+                                                {{ translate('messages.saturday') }}
+                                            </option>
+                                            <option value="sunday" {{ $closing_day == 'sunday' ? 'selected' : '' }}>
+                                                {{ translate('messages.sunday') }}
+                                            </option>
+                                            <option value="monday" {{ $closing_day == 'monday' ? 'selected' : '' }}>
+                                                {{ translate('messages.monday') }}
+                                            </option>
+                                            <option value="tuesday" {{ $closing_day == 'tuesday' ? 'selected' : '' }}>
+                                                {{ translate('messages.tuesday') }}
+                                            </option>
+                                            <option value="wednesday" {{ $closing_day == 'wednesday' ? 'selected' : '' }}>
+                                                {{ translate('messages.wednesday') }}
+                                            </option>
+                                            <option value="thrusday" {{ $closing_day == 'thrusday' ? 'selected' : '' }}>
+                                                {{ translate('messages.thrusday') }}
+                                            </option>
+                                            <option value="friday" {{ $closing_day == 'friday' ? 'selected' : '' }}>
+                                                {{ translate('messages.friday') }}
+                                            </option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>

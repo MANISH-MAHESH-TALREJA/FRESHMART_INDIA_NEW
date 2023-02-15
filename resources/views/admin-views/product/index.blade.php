@@ -140,7 +140,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-2">
-                                <div class="col-sm-6 col-lg-4">
+                                {{-- <div class="col-sm-6 col-lg-4">
                                     <div class="form-group mb-0">
                                         <label class="input-label">{{ translate('messages.module') }}</label>
                                         <select name="module_id" id="module_id" required
@@ -154,7 +154,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="col-sm-6 col-lg-4">
                                     <div class="form-group mb-0">
@@ -638,7 +638,7 @@
     </script>
 
     <script>
-        var module_id = 0;
+        var module_id = {{Config::get('module.current_module_id')}};
         var parent_category_id = 0;
         var module_data = null;
         var stock = true;
@@ -690,7 +690,7 @@
             });
             module_id = id;
         }
-
+        modulChange({{Config::get('module.current_module_id')}});
         function categoryChange(id) {
             parent_category_id = id;
             console.log(parent_category_id);
@@ -710,7 +710,7 @@
                     return {
                         q: params.term, // search term
                         page: params.page,
-                        module_id: module_id
+                        module_id:{{Config::get('module.current_module_id')}},
                     };
                 },
                 processResults: function(data) {
@@ -736,7 +736,7 @@
                     return {
                         q: params.term, // search term
                         page: params.page,
-                        module_id: module_id
+                        module_id:{{Config::get('module.current_module_id')}},
                     };
                 },
                 processResults: function(data) {
@@ -762,7 +762,7 @@
                     return {
                         q: params.term, // search term
                         page: params.page,
-                        module_id: module_id,
+                        module_id:{{Config::get('module.current_module_id')}},
                         parent_id: parent_category_id,
                         sub_category: true
                     };

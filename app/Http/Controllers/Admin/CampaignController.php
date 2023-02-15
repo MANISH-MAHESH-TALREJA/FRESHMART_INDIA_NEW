@@ -9,7 +9,7 @@ use App\Models\Campaign;
 use App\Models\ItemCampaign;
 use App\Models\Store;
 use Brian2694\Toastr\Facades\Toastr;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use App\CentralLogics\Helpers;
 use App\Models\Translation;
@@ -25,10 +25,10 @@ class CampaignController extends Controller
     {
         if($type=='basic')
         {
-            $campaigns=Campaign::with('module')->latest()->paginate(config('default_pagination'));
+            $campaigns=Campaign::with('module')->where('module_id', Config::get('module.current_module_id'))->latest()->paginate(config('default_pagination'));
         }
         else{
-            $campaigns=ItemCampaign::latest()->paginate(config('default_pagination'));
+            $campaigns=ItemCampaign::where('module_id', Config::get('module.current_module_id'))->latest()->paginate(config('default_pagination'));
         }
         
         return view('admin-views.campaign.'.$type.'.list', compact('campaigns'));
@@ -40,7 +40,6 @@ class CampaignController extends Controller
             'title' => 'required|unique:campaigns|max:191',
             'description'=>'max:1000',
             'image' => 'required',
-            'module_id'=>'required'
         ]);
         
         if ($validator->fails()) {
@@ -55,7 +54,7 @@ class CampaignController extends Controller
         $campaign->end_date = $request->end_date;
         $campaign->start_time = $request->start_time;
         $campaign->end_time = $request->end_time;
-        $campaign->module_id = $request->module_id;
+        $campaign->module_id = Config::get('module.current_module_id');
         $campaign->save();
         
         $data = [];
@@ -286,8 +285,9 @@ class CampaignController extends Controller
         $campaign->add_ons = $request->has('addon_ids') ? json_encode($request->addon_ids) : json_encode([]);
         $campaign->store_id = $request->store_id;
         $campaign->veg = $request->veg;
-        $campaign->module_id= $request->module_id;
+        $campaign->module_id= Config::get('module.current_module_id');
         $campaign->stock= $request->current_stock;
+        $campaign->unit_id = $request->unit;
         $campaign->save();
         
         $data = [];
@@ -458,6 +458,7 @@ class CampaignController extends Controller
         $campaign->attributes = $request->has('attribute_id') ? json_encode($request->attribute_id) : json_encode([]);
         $campaign->add_ons = $request->has('addon_ids') ? json_encode($request->addon_ids) : json_encode([]);
         $campaign->veg = $request->veg;
+        $campaign->unit_id = $request->unit;
         $campaign->stock= $request->current_stock;
         $campaign->save();
 
@@ -585,7 +586,7 @@ class CampaignController extends Controller
 
     public function searchBasic(Request $request){
         $key = explode(' ', $request['search']);
-        $campaigns=Campaign::where(function ($q) use ($key) {
+        $campaigns=Campaign::where('module_id', Config::get('module.current_module_id'))->where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('title', 'like', "%{$value}%");
             }
@@ -597,7 +598,7 @@ class CampaignController extends Controller
     }
     public function searchItem(Request $request){
         $key = explode(' ', $request['search']);
-        $campaigns=ItemCampaign::where(function ($q) use ($key) {
+        $campaigns=ItemCampaign::where('module_id', Config::get('module.current_module_id'))->where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('title', 'like', "%{$value}%");
             }

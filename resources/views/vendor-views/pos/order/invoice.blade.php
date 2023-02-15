@@ -230,7 +230,11 @@
             <div class="checkout--info">
                 <dl class="row text-right">
                     @if ($order->order_type != 'parcel')
-                        <dt class="col-6">{{ translate('messages.subtotal') }}:</dt>
+                        <dt class="col-6">{{ translate('messages.subtotal') }}
+                            @if ($order->tax_status == 'included' )
+                            ({{ translate('messages.TAX_Included') }})
+                            @endif
+                            :</dt>
                         <dd class="col-6">
                             {{ \App\CentralLogics\Helpers::format_currency($sub_total + $add_ons_cost) }}</dd>
                         <dt class="col-6">{{ translate('messages.discount') }}:</dt>
@@ -243,9 +247,11 @@
                             -
                             {{ \App\CentralLogics\Helpers::format_currency($order['coupon_discount_amount']) }}
                         </dd>
+                        @if ($order->tax_status == 'excluded' || $order->tax_status == null  )
                         <dt class="col-6">{{ translate('messages.vat/tax') }}:</dt>
                         <dd class="col-6">+
                             {{ \App\CentralLogics\Helpers::format_currency($order['total_tax_amount']) }}</dd>
+                            @endif
                         <dt class="col-6">{{ translate('messages.delivery_man_tips') }}:</dt>
                         <dd class="col-6">
                             @php($delivery_man_tips = $order['dm_tips'])

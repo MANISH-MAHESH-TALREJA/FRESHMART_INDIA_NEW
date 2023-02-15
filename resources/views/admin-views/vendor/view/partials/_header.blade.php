@@ -1,7 +1,7 @@
     <!-- Page Header -->
     <div class="page-header pb-0">
-        <div class="row align-items-center">
-            <div class="col-6">
+        <div class="d-flex justify-content-between">
+            <div>
                 <h1 class="page-header-title text-break">
                     <span class="page-header-icon">
                         <img src="{{asset('public/assets/admin/img/store.png')}}" class="w--26" alt="">
@@ -9,7 +9,7 @@
                     <span>{{$store->name}}</span>
                 </h1>
             </div>
-            <div class="col-6">
+            <div>
                 @if(Request::is("admin/store/view/{$store->id}"))
                     @if($store->vendor->status)
                     <a href="{{route('admin.store.edit',[$store->id])}}" class="btn btn--primary float-right">

@@ -23,7 +23,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <form action="{{route('admin.custom-role.create')}}" method="post">
+                    <form action="{{route('admin.users.custom-role.create')}}" method="post">
                         @csrf
                         <div class="form-group">
                             <label class="input-label qcont" for="name">{{translate('messages.role_name')}}</label>
@@ -330,13 +330,13 @@
                                     <td>
                                         <div class="btn--container justify-content-center">
                                             <a class="btn action-btn btn--primary btn-outline-primary"
-                                                href="{{route('admin.custom-role.edit',[$r['id']])}}" title="{{translate('messages.edit')}} {{translate('messages.role')}}"><i class="tio-edit"></i>
+                                                href="{{route('admin.users.custom-role.edit',[$r['id']])}}" title="{{translate('messages.edit')}} {{translate('messages.role')}}"><i class="tio-edit"></i>
                                             </a>
                                             <a class="btn action-btn btn--danger btn-outline-danger" href="javascript:"
                                                 onclick="form_alert('role-{{$r['id']}}','{{translate('messages.Want_to_delete_this_role')}}')" title="{{translate('messages.delete')}} {{translate('messages.role')}}"><i class="tio-delete-outlined"></i>
                                             </a>
                                         </div>
-                                        <form action="{{route('admin.custom-role.delete',[$r['id']])}}"
+                                        <form action="{{route('admin.users.custom-role.delete',[$r['id']])}}"
                                                 method="post" id="role-{{$r['id']}}">
                                             @csrf @method('delete')
                                         </form>
@@ -378,7 +378,7 @@
                 }
             });
             $.post({
-                url: '{{route('admin.custom-role.search')}}',
+                url: '{{route('admin.users.custom-role.search')}}',
                 data: formData,
                 cache: false,
                 contentType: false,

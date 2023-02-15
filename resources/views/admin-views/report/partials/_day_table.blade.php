@@ -3,11 +3,11 @@
     <td>{{ $k + 1 }}</td>
     @if ($ot->order->order_type == 'parcel')
         <td><a
-                href="{{ route('admin.parcel.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
+                href="{{ route('admin.transactions.parcel.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
         </td>
     @else
         <td><a
-                href="{{ route('admin.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
+                href="{{ route('admin.transactions.order.details', $ot->order_id) }}">{{ $ot->order_id }}</a>
         </td>
     @endif
     <td  class="text-capitalize">
@@ -20,7 +20,7 @@
     <td class="white-space-nowrap">
         @if ($ot->order->customer)
             <a class="text-body text-capitalize"
-                href="{{ route('admin.customer.view', [$ot->order['user_id']]) }}">
+                href="{{ route('admin.users.customer.view', [$ot->order['user_id']]) }}">
                 <strong>{{ $ot->order->customer['f_name'] . ' ' . $ot->order->customer['l_name'] }}</strong>
             </a>
         @else

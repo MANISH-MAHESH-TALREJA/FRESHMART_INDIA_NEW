@@ -7,6 +7,7 @@
     <?php
     if (count($order->details) > 0) {
         $campaign_order = $order->details[0]->campaign ? true : false;
+        $tax_included =0;
     }
     ?>
     <div class="content container-fluid">
@@ -124,7 +125,7 @@
                                 <h6 class="text-capitalize">{{ translate('messages.order') }}
                                     {{ translate('messages.type') }}
                                     : <label
-                                        class="fz--10 badge badge-soft-primary">{{ translate(str_replace('_', ' ', $order['order_type'])) }}</label>
+                                        class="fz--10 badge m-0 badge-soft-primary">{{ translate(str_replace('_', ' ', $order['order_type'])) }}</label>
                                 </h6>
                                 <h6>
                                     {{ translate('messages.order_status') }} :
@@ -479,6 +480,7 @@
                         $total_price = $product_price + $total_addon_price - $store_discount_amount - $coupon_discount_amount;
                         
                         $total_tax_amount = $order['total_tax_amount'];
+                        $tax_included = \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first() ?  \App\Models\BusinessSetting::where(['key'=>'tax_included'])->first()->value : 0;
                         
                         $store_discount_amount = $order['store_discount_amount'];
                         
@@ -500,7 +502,11 @@
                                         </dd>
                                     @endif
 
-                                    <dt class="col-6">{{ translate('messages.subtotal') }}:</dt>
+                                    <dt class="col-6">{{ translate('messages.subtotal') }}
+                                        @if ($order->tax_status == 'included' ||  $tax_included ==  1)
+                                        ({{ translate('messages.TAX_Included') }})
+                                        @endif
+                                        :</dt>
 
                                     <dd class="col-6">
                                         @if ($order->prescription_order == 1 &&
@@ -527,9 +533,13 @@
                                         {{ translate('messages.discount') }}:</dt>
                                     <dd class="col-6">
                                         - {{ \App\CentralLogics\Helpers::format_currency($coupon_discount_amount) }}</dd>
-                                    <dt class="col-6">{{ translate('messages.vat/tax') }}:</dt>
-                                    <dd class="col-6">
-                                        + {{ \App\CentralLogics\Helpers::format_currency($total_tax_amount) }}</dd>
+                                        @if ($order->tax_status == 'excluded' || $order->tax_status == null  )
+                                        <dt class="col-sm-6">{{ translate('messages.vat/tax') }}:</dt>
+                                        <dd class="col-sm-6">
+                                            +
+                                            {{ \App\CentralLogics\Helpers::format_currency($total_tax_amount) }}
+                                        </dd>
+                                        @endif
                                     <dt class="col-6">{{ translate('messages.delivery_man_tips') }}</dt>
                                     <dd class="col-6">
                                         + {{ \App\CentralLogics\Helpers::format_currency($order->dm_tips) }}</dd>

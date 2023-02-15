@@ -35,7 +35,7 @@
                         <div class="card-header">
                             <div class="w-100">
                                 <div class="row g-2 justify-content-around">
-                                    <div class="col-sm-6 col-12">
+                                    {{-- <div class="col-sm-6 col-12">
                                         <select name="module_id" class="form-control js-select2-custom" onchange="set_filter('{{url()->full()}}',this.value,'module_id')" title="{{translate('messages.select')}} {{translate('messages.modules')}}">
                                             <option value="" {{!request('module_id') ? 'selected':''}}>{{translate('messages.select_a_module')}}</option>
                                             @foreach (\App\Models\Module::notParcel()->get() as $module)
@@ -45,9 +45,9 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>
+                                    </div> --}}
                                     <div class="col-sm-6 col-12">
-                                        <select name="store_id" id="store_select" onchange="set_filter('{{url()->full()}}',this.value, 'store_id')" data-placeholder="{{translate('messages.select')}} {{translate('messages.store')}}" class="js-data-example-ajax form-control h--45px" disabled>
+                                        <select name="store_id" id="store_select" onchange="set_filter('{{url()->full()}}',this.value, 'store_id')" data-placeholder="{{translate('messages.select')}} {{translate('messages.store')}}" class="js-data-example-ajax form-control h--45px">
                                             @if($store)
                                             <option value="{{$store->id}}" selected>{{$store->name}}</option>
                                             @endif
@@ -61,7 +61,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-sm-6 col-12">
+                                    <div class="col-sm-12 col-12">
                                         <form id="search-form" class="search-form">
                                             <!-- Search -->
                                             <div class="input-group input--group">
@@ -465,7 +465,7 @@
                 data: function (params) {
                     return {
                         q: params.term, // search term
-                        module_id:{{request('module_id')??'null'}},
+                        module_id:{{Config::get('module.current_module_id')}},
                         page: params.page
                     };
                 },
@@ -672,16 +672,16 @@
                 }
             }
         }
-        function checkModule() {
-            var module_id = getUrlParameter('module_id');
-            if(module_id){
-                $('#store_select').prop("disabled", false);
-            }
-        }
+        // function checkModule() {
+        //     var module_id = getUrlParameter('module_id');
+        //     if(module_id){
+        //         $('#store_select').prop("disabled", false);
+        //     }
+        // }
 
-        checkModule();
+        // checkModule();
         function checkStore() {
-            var module_id = getUrlParameter('module_id');
+            var module_id = {{Config::get('module.current_module_id')}};
             var store_id = getUrlParameter('store_id');
             if(module_id && store_id){
                 $('#category').prop("disabled", false);

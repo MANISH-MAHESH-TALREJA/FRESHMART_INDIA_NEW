@@ -22,7 +22,7 @@
         <!-- End Page Header -->
         <div class="card">
             <div class="card-body">
-                <form action="{{route('admin.module.update',[$module['id']])}}" method="post" enctype="multipart/form-data">
+                <form action="{{route('admin.business-settings.module.update',[$module['id']])}}" method="post" enctype="multipart/form-data">
                     @method('PUT')
                     @csrf
                     @php($language=\App\Models\BusinessSetting::where('key','language')->first())

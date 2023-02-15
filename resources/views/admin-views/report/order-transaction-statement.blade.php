@@ -40,7 +40,7 @@
         table thead th {
             padding: 8px;
             font-size: 11px;
-            text-align: left;
+            text-align: start;
         }
 
         table tbody th,
@@ -69,14 +69,14 @@
         }
 
         table.calc-table th {
-            text-align: left;
+            text-align: start;
         }
 
         table.calc-table td {
-            text-align: right;
+            text-align: end;
         }
         table.calc-table td.text-left {
-            text-align: left;
+            text-align: start;
         }
 
         .table-total {
@@ -85,7 +85,7 @@
 
 
         .text-left {
-            text-align: left !important;
+            text-align: start !important;
         }
 
         .pb-2 {
@@ -97,7 +97,7 @@
         }
 
         .text-right {
-            text-align: right;
+            text-align: end;
         }
 
         .content-position {
@@ -131,8 +131,8 @@
             margin-bottom: 30px !important;
         }
         .px-10 {
-            padding-left: 10px;
-            padding-right: 10px;
+            padding-inline-start: 10px;
+            padding-inline-end: 10px;
         }
         .fz-14 {
             font-size: 14px;

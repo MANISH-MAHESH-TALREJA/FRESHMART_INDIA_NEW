@@ -565,6 +565,7 @@ class Helpers
                 'id' => $item['id'],
                 'name' => $item['f_name'] . ' ' . $item['l_name'],
                 'image' => $item['image'],
+                'assigned_order_count' => $item['assigned_order_count'],
                 'lat' => $item->last_location ? $item->last_location->latitude : false,
                 'lng' => $item->last_location ? $item->last_location->longitude : false,
                 'location' => $item->last_location ? $item->last_location->location : '',
@@ -659,7 +660,7 @@ class Helpers
         return $currency_symbol_position == 'right' ? number_format($value, config('round_up_to_digit')) . ' ' . self::currency_symbol() : self::currency_symbol() . ' ' . number_format($value, config('round_up_to_digit'));
     }
 
-    public static function send_push_notif_to_device($fcm_token, $data)
+    public static function send_push_notif_to_device($fcm_token, $data, $web_push_link = null)
     {
         $key = BusinessSetting::where(['key' => 'push_notification_key'])->first()->value;
         $url = "https://fcm.googleapis.com/fcm/send";
@@ -683,6 +684,22 @@ class Helpers
         }else{
             $sender_type = '';
         }
+        if(isset($data['module_id'])){
+            $module_id = $data['module_id'];
+        }else{
+            $module_id = '';
+        }
+        if(isset($data['order_type'])){
+            $order_type = $data['order_type'];
+        }else{
+            $order_type = '';
+        }
+
+        $click_action = "";
+        if($web_push_link){
+            $click_action = ',
+            "click_action": "'.$web_push_link.'"';
+        }
 
         $postdata = '{
             "to" : "' . $fcm_token . '",
@@ -695,6 +712,8 @@ class Helpers
                 "type":"' . $data['type'] . '",
                 "conversation_id":"' . $conversation_id . '",
                 "sender_type":"' . $sender_type . '",
+                "module_id":"' . $module_id . '",
+                "order_type":"' . $order_type . '",
                 "is_read": 0
             },
             "notification" : {
@@ -709,6 +728,7 @@ class Helpers
                 "icon" : "new",
                 "sound": "notification.wav",
                 "android_channel_id": "6ammart"
+                '.$click_action.'
             }
         }';
         $ch = curl_init();
@@ -728,7 +748,7 @@ class Helpers
         return $result;
     }
 
-    public static function send_push_notif_to_topic($data, $topic, $type)
+    public static function send_push_notif_to_topic($data, $topic, $type,$web_push_link = null)
     {
         $key = BusinessSetting::where(['key' => 'push_notification_key'])->first()->value;
 
@@ -737,6 +757,23 @@ class Helpers
             "authorization: key=" . $key . "",
             "content-type: application/json"
         );
+        if(isset($data['module_id'])){
+            $module_id = $data['module_id'];
+        }else{
+            $module_id = '';
+        }
+        if(isset($data['order_type'])){
+            $order_type = $data['order_type'];
+        }else{
+            $order_type = '';
+        }
+
+        $click_action = "";
+        if($web_push_link){
+            $click_action = ',
+            "click_action": "'.$web_push_link.'"';
+        }
+
         if (isset($data['order_id'])) {
             $postdata = '{
                 "to" : "/topics/' . $topic . '",
@@ -746,6 +783,8 @@ class Helpers
                     "body" : "' . $data['description'] . '",
                     "image" : "' . $data['image'] . '",
                     "order_id":"' . $data['order_id'] . '",
+                    "module_id":"' . $module_id . '",
+                    "order_type":"' . $order_type . '",
                     "is_read": 0,
                     "type":"' . $type . '"
                 },
@@ -761,6 +800,7 @@ class Helpers
                     "icon" : "new",
                     "sound": "notification.wav",
                     "android_channel_id": "6ammart"
+                    '.$click_action.'
                   }
             }';
         } else {
@@ -784,6 +824,7 @@ class Helpers
                     "icon" : "new",
                     "sound": "notification.wav",
                     "android_channel_id": "6ammart"
+                    '.$click_action.'
                   }
             }';
         }
@@ -1116,6 +1157,20 @@ class Helpers
     {
 
         try {
+
+            if(($order->payment_method == 'cash_on_delivery' && $order->order_status == 'pending' )||($order->payment_method != 'cash_on_delivery' && $order->order_status == 'confirmed' )){
+                $data = [
+                    'title' => translate('messages.order_push_title'),
+                    'description' => translate('messages.new_order_push_description'),
+                    'order_id' => $order->id,
+                    'image' => '',
+                    'module_id' => $order->module_id,
+                    'order_type' => $order->order_type,
+                    'type' => 'new_order',
+                ];
+                self::send_push_notif_to_topic($data, 'admin_message', 'order_request', url('/').'/admin/order/list/all');
+            }
+
             $status = ($order->order_status == 'delivered' && $order->delivery_man) ? 'delivery_boy_delivered' : $order->order_status;
             $value = self::order_status_update_message($status,$order->module->module_type,$order->customer?
             $order->customer->current_language_key:'en');
@@ -1144,13 +1199,15 @@ class Helpers
                     'image' => '',
                     'type' => 'order_status',
                 ];
-                self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
-                DB::table('user_notifications')->insert([
-                    'data' => json_encode($data),
-                    'vendor_id' => $order->store->vendor_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                if($order->store && $order->store->vendor){
+                    self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
+                    DB::table('user_notifications')->insert([
+                        'data' => json_encode($data),
+                        'vendor_id' => $order->store->vendor_id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
 
             if ($order->order_type == 'delivery' && !$order->scheduled && $status == 'pending' && $order->payment_method == 'cash_on_delivery' && config('order_confirmation_model') == 'deliveryman') {
@@ -1159,25 +1216,39 @@ class Helpers
                         'title' => translate('messages.order_push_title'),
                         'description' => translate('messages.new_order_push_description'),
                         'order_id' => $order->id,
+                        'module_id' => $order->module_id,
+                        'order_type' => $order->order_type,
                         'image' => '',
                         'type' => 'new_order',
                     ];
-                    self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
-                    DB::table('user_notifications')->insert([
-                        'data' => json_encode($data),
-                        'vendor_id' => $order->store->vendor_id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
+                    if($order->store && $order->store->vendor){
+                        self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
+                        $web_push_link = url('/').'/store-panel/order/list/all';
+                        self::send_push_notif_to_topic($data, "store_panel_{$order->store_id}_message", 'new_order', $web_push_link);
+                        DB::table('user_notifications')->insert([
+                            'data' => json_encode($data),
+                            'vendor_id' => $order->store->vendor_id,
+                            'module_id' => $order->module_id,
+                            'order_type' => $order->order_type,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
                 } else {
                     $data = [
                         'title' => translate('messages.order_push_title'),
                         'description' => translate('messages.new_order_push_description'),
                         'order_id' => $order->id,
+                        'module_id' => $order->module_id,
+                        'order_type' => $order->order_type,
                         'image' => '',
                     ];
-                    self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                    if($order->zone){
+
+                        self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                    }
                 }
+                // self::send_push_notif_to_topic($data, 'admin_message', 'order_request', url('/').'/admin/order/list/all');
             }
 
             if ($order->order_type == 'parcel' && in_array($order->order_status, ['pending', 'confirmed'])) {
@@ -1185,9 +1256,15 @@ class Helpers
                     'title' => translate('messages.order_push_title'),
                     'description' => translate('messages.new_order_push_description'),
                     'order_id' => $order->id,
+                    'module_id' => $order->module_id,
+                    'order_type' => 'parcel_order',
                     'image' => '',
                 ];
-                self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                if($order->zone){
+
+                    self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                }
+                // self::send_push_notif_to_topic($data, 'admin_message', 'order_request');
             }
 
             if ($order->order_type == 'delivery' && !$order->scheduled && $order->order_status == 'pending' && $order->payment_method == 'cash_on_delivery' && config('order_confirmation_model') == 'store') {
@@ -1195,16 +1272,23 @@ class Helpers
                     'title' => translate('messages.order_push_title'),
                     'description' => translate('messages.new_order_push_description'),
                     'order_id' => $order->id,
+                    'module_id' => $order->module_id,
+                    'order_type' => $order->order_type,
                     'image' => '',
                     'type' => 'new_order',
                 ];
-                self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
-                DB::table('user_notifications')->insert([
-                    'data' => json_encode($data),
-                    'vendor_id' => $order->store->vendor_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+                if($order->store && $order->store->vendor){
+                    self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
+                    $web_push_link = url('/').'/store-panel/order/list/all';
+                    self::send_push_notif_to_topic($data, "store_panel_{$order->store_id}_message", 'new_order', $web_push_link);
+                    // self::send_push_notif_to_topic($data, 'admin_message', 'order_request');
+                    DB::table('user_notifications')->insert([
+                        'data' => json_encode($data),
+                        'vendor_id' => $order->store->vendor_id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
             }
 
             if (!$order->scheduled && (($order->order_type == 'take_away' && $order->order_status == 'pending') || ($order->payment_method != 'cash_on_delivery' && $order->order_status == 'confirmed'))) {
@@ -1215,34 +1299,10 @@ class Helpers
                     'image' => '',
                     'type' => 'new_order',
                 ];
-                self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
-                DB::table('user_notifications')->insert([
-                    'data' => json_encode($data),
-                    'vendor_id' => $order->store->vendor_id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
-            }
-
-            if ($order->order_status == 'confirmed' && $order->order_type != 'take_away' && config('order_confirmation_model') == 'deliveryman' && $order->payment_method == 'cash_on_delivery') {
-                if ($order->store->self_delivery_system) {
-                    $data = [
-                        'title' => translate('messages.order_push_title'),
-                        'description' => translate('messages.new_order_push_description'),
-                        'order_id' => $order->id,
-                        'image' => '',
-                    ];
-
-                    self::send_push_notif_to_topic($data, "restaurant_dm_" . $order->store_id, 'new_order');
-                } else {
-                    $data = [
-                        'title' => translate('messages.order_push_title'),
-                        'description' => translate('messages.new_order_push_description'),
-                        'order_id' => $order->id,
-                        'image' => '',
-                        'type' => 'new_order',
-                    ];
+                if($order->store && $order->store->vendor){
                     self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
+                    $web_push_link = url('/').'/store-panel/order/list/all';
+                    self::send_push_notif_to_topic($data, "store_panel_{$order->store_id}_message", 'new_order', $web_push_link);
                     DB::table('user_notifications')->insert([
                         'data' => json_encode($data),
                         'vendor_id' => $order->store->vendor_id,
@@ -1252,17 +1312,58 @@ class Helpers
                 }
             }
 
+            if ($order->order_status == 'confirmed' && $order->order_type != 'take_away' && config('order_confirmation_model') == 'deliveryman' && $order->payment_method == 'cash_on_delivery') {
+                if ($order->store->self_delivery_system) {
+                    $data = [
+                        'title' => translate('messages.order_push_title'),
+                        'description' => translate('messages.new_order_push_description'),
+                        'order_id' => $order->id,
+                        'module_id' => $order->module_id,
+                        'order_type' => $order->order_type,
+                        'image' => '',
+                    ];
+
+                    self::send_push_notif_to_topic($data, "restaurant_dm_" . $order->store_id, 'new_order');
+                } else {
+                    $data = [
+                        'title' => translate('messages.order_push_title'),
+                        'description' => translate('messages.new_order_push_description'),
+                        'order_id' => $order->id,
+                        'module_id' => $order->module_id,
+                        'order_type' => $order->order_type,
+                        'image' => '',
+                        'type' => 'new_order',
+                    ];
+                    if($order->store && $order->store->vendor){
+                        self::send_push_notif_to_device($order->store->vendor->firebase_token, $data);
+                        $web_push_link = url('/').'/store-panel/order/list/all';
+                        self::send_push_notif_to_topic($data, "store_panel_{$order->store_id}_message", 'new_order', $web_push_link);
+                        DB::table('user_notifications')->insert([
+                            'data' => json_encode($data),
+                            'vendor_id' => $order->store->vendor_id,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+                }
+            }
+
             if ($order->order_type == 'delivery' && !$order->scheduled && $order->order_status == 'confirmed'  && ($order->payment_method != 'cash_on_delivery' || config('order_confirmation_model') == 'store')) {
                 $data = [
                     'title' => translate('messages.order_push_title'),
                     'description' => translate('messages.new_order_push_description'),
                     'order_id' => $order->id,
+                    'module_id' => $order->module_id,
+                    'order_type' => $order->order_type,
                     'image' => '',
                 ];
                 if ($order->store->self_delivery_system) {
                     self::send_push_notif_to_topic($data, "restaurant_dm_" . $order->store_id, 'order_request');
-                } else {
-                    self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                } else
+                 {if($order->zone){
+
+                     self::send_push_notif_to_topic($data, $order->zone->deliveryman_wise_topic, 'order_request');
+                 }
                 }
             }
 
@@ -1718,7 +1819,26 @@ class Helpers
     }
     public static function default_lang()
     {
-        return 'en';
+        if (strpos(url()->current(), '/api')) {
+            $lang = App::getLocale();
+        } elseif (session()->has('local')) {
+            $lang = session('local');
+        } else {
+            $data = Helpers::get_business_settings('language');
+            $code = 'en';
+            $direction = 'ltr';
+            foreach ($data as $ln) {
+                if (is_array($ln) && array_key_exists('default', $ln) && $ln['default']) {
+                    $code = $ln['code'];
+                    if (array_key_exists('direction', $ln)) {
+                        $direction = $ln['direction'];
+                    }
+                }
+            }
+            session()->put('local', $code);
+            $lang = $code;
+        }
+        return $lang;
     }
     //Mail Config Check
     public static function remove_invalid_charcaters($str)
@@ -2125,5 +2245,359 @@ class Helpers
         $mpdf_view = $mpdf_view->render();
         $mpdf->WriteHTML($mpdf_view);
         $mpdf->Output($file_prefix . $file_postfix . '.pdf', 'D');
+    }
+
+    public static function auto_translator($q, $sl, $tl)
+    {
+        $res = file_get_contents("https://translate.googleapis.com/translate_a/single?client=gtx&ie=UTF-8&oe=UTF-8&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&dt=at&sl=" . $sl . "&tl=" . $tl . "&hl=hl&q=" . urlencode($q), $_SERVER['DOCUMENT_ROOT'] . "/transes.html");
+        $res = json_decode($res);
+        return str_replace('_',' ',$res[0][0][0]);
+    }
+
+    public static function getLanguageCode(string $country_code): string
+    {
+        $locales = array(
+            'en-English(default)',
+            'af-Afrikaans',
+            'sq-Albanian - shqip',
+            'am-Amharic - አማርኛ',
+            'ar-Arabic - العربية',
+            'an-Aragonese - aragonés',
+            'hy-Armenian - հայերեն',
+            'ast-Asturian - asturianu',
+            'az-Azerbaijani - azərbaycan dili',
+            'eu-Basque - euskara',
+            'be-Belarusian - беларуская',
+            'bn-Bengali - বাংলা',
+            'bs-Bosnian - bosanski',
+            'br-Breton - brezhoneg',
+            'bg-Bulgarian - български',
+            'ca-Catalan - català',
+            'ckb-Central Kurdish - کوردی (دەستنوسی عەرەبی)',
+            'zh-Chinese - 中文',
+            'zh-HK-Chinese (Hong Kong) - 中文（香港）',
+            'zh-CN-Chinese (Simplified) - 中文（简体）',
+            'zh-TW-Chinese (Traditional) - 中文（繁體）',
+            'co-Corsican',
+            'hr-Croatian - hrvatski',
+            'cs-Czech - čeština',
+            'da-Danish - dansk',
+            'nl-Dutch - Nederlands',
+            'en-AU-English (Australia)',
+            'en-CA-English (Canada)',
+            'en-IN-English (India)',
+            'en-NZ-English (New Zealand)',
+            'en-ZA-English (South Africa)',
+            'en-GB-English (United Kingdom)',
+            'en-US-English (United States)',
+            'eo-Esperanto - esperanto',
+            'et-Estonian - eesti',
+            'fo-Faroese - føroyskt',
+            'fil-Filipino',
+            'fi-Finnish - suomi',
+            'fr-French - français',
+            'fr-CA-French (Canada) - français (Canada)',
+            'fr-FR-French (France) - français (France)',
+            'fr-CH-French (Switzerland) - français (Suisse)',
+            'gl-Galician - galego',
+            'ka-Georgian - ქართული',
+            'de-German - Deutsch',
+            'de-AT-German (Austria) - Deutsch (Österreich)',
+            'de-DE-German (Germany) - Deutsch (Deutschland)',
+            'de-LI-German (Liechtenstein) - Deutsch (Liechtenstein)
+            ',
+            'de-CH-German (Switzerland) - Deutsch (Schweiz)',
+            'el-Greek - Ελληνικά',
+            'gn-Guarani',
+            'gu-Gujarati - ગુજરાતી',
+            'ha-Hausa',
+            'haw-Hawaiian - ʻŌlelo Hawaiʻi',
+            'he-Hebrew - עברית',
+            'hi-Hindi - हिन्दी',
+            'hu-Hungarian - magyar',
+            'is-Icelandic - íslenska',
+            'id-Indonesian - Indonesia',
+            'ia-Interlingua',
+            'ga-Irish - Gaeilge',
+            'it-Italian - italiano',
+            'it-IT-Italian (Italy) - italiano (Italia)',
+            'it-CH-Italian (Switzerland) - italiano (Svizzera)',
+            'ja-Japanese - 日本語',
+            'kn-Kannada - ಕನ್ನಡ',
+            'kk-Kazakh - қазақ тілі',
+            'km-Khmer - ខ្មែរ',
+            'ko-Korean - 한국어',
+            'ku-Kurdish - Kurdî',
+            'ky-Kyrgyz - кыргызча',
+            'lo-Lao - ລາວ',
+            'la-Latin',
+            'lv-Latvian - latviešu',
+            'ln-Lingala - lingála',
+            'lt-Lithuanian - lietuvių',
+            'mk-Macedonian - македонски',
+            'ms-Malay - Bahasa Melayu',
+            'ml-Malayalam - മലയാളം',
+            'mt-Maltese - Malti',
+            'mr-Marathi - मराठी',
+            'mn-Mongolian - монгол',
+            'ne-Nepali - नेपाली',
+            'no-Norwegian - norsk',
+            'nb-Norwegian Bokmål - norsk bokmål',
+            'nn-Norwegian Nynorsk - nynorsk',
+            'oc-Occitan',
+            'or-Oriya - ଓଡ଼ିଆ',
+            'om-Oromo - Oromoo',
+            'ps-Pashto - پښتو',
+            'fa-Persian - فارسی',
+            'pl-Polish - polski',
+            'pt-Portuguese - português',
+            'pt-BR-Portuguese (Brazil) - português (Brasil)',
+            'pt-PT-Portuguese (Portugal) - português (Portugal)',
+            'pa-Punjabi - ਪੰਜਾਬੀ',
+            'qu-Quechua',
+            'ro-Romanian - română',
+            'mo-Romanian (Moldova) - română (Moldova)',
+            'rm-Romansh - rumantsch',
+            'ru-Russian - русский',
+            'gd-Scottish Gaelic',
+            'sr-Serbian - српски',
+            'sh-Serbo-Croatian - Srpskohrvatski',
+            'sn-Shona - chiShona',
+            'sd-Sindhi',
+            'si-Sinhala - සිංහල',
+            'sk-Slovak - slovenčina',
+            'sl-Slovenian - slovenščina',
+            'so-Somali - Soomaali',
+            'st-Southern Sotho',
+            'es-Spanish - español',
+            'es-AR-Spanish (Argentina) - español (Argentina)',
+            'es-419-Spanish (Latin America) - español (Latinoamérica)
+            ',
+            'es-MX-Spanish (Mexico) - español (México)',
+            'es-ES-Spanish (Spain) - español (España)',
+            'es-US-Spanish (United States) - español (Estados Unidos)
+            ',
+            'su-Sundanese',
+            'sw-Swahili - Kiswahili',
+            'sv-Swedish - svenska',
+            'tg-Tajik - тоҷикӣ',
+            'ta-Tamil - தமிழ்',
+            'tt-Tatar',
+            'te-Telugu - తెలుగు',
+            'th-Thai - ไทย',
+            'ti-Tigrinya - ትግርኛ',
+            'to-Tongan - lea fakatonga',
+            'tr-Turkish - Türkçe',
+            'tk-Turkmen',
+            'tw-Twi',
+            'uk-Ukrainian - українська',
+            'ur-Urdu - اردو',
+            'ug-Uyghur',
+            'uz-Uzbek - o‘zbek',
+            'vi-Vietnamese - Tiếng Việt',
+            'wa-Walloon - wa',
+            'cy-Welsh - Cymraeg',
+            'fy-Western Frisian',
+            'xh-Xhosa',
+            'yi-Yiddish',
+            'yo-Yoruba - Èdè Yorùbá',
+            'zu-Zulu - isiZulu',
+        );
+
+        foreach ($locales as $locale) {
+            $locale_region = explode('-',$locale);
+            if (strtoupper($country_code) == $locale_region[1]) {
+                return $locale_region[0];
+            }
+        }
+
+        return "en";
+    }
+    // function getLanguageCode(string $country_code): string
+    // {
+    //     $locales = array('af-ZA',
+    //         'am-ET',
+    //         'ar-AE',
+    //         'ar-BH',
+    //         'ar-DZ',
+    //         'ar-EG',
+    //         'ar-IQ',
+    //         'ar-JO',
+    //         'ar-KW',
+    //         'ar-LB',
+    //         'ar-LY',
+    //         'ar-MA',
+    //         'ar-OM',
+    //         'ar-QA',
+    //         'ar-SA',
+    //         'ar-SY',
+    //         'ar-TN',
+    //         'ar-YE',
+    //         'az-Cyrl-AZ',
+    //         'az-Latn-AZ',
+    //         'be-BY',
+    //         'bg-BG',
+    //         'bn-BD',
+    //         'bs-Cyrl-BA',
+    //         'bs-Latn-BA',
+    //         'cs-CZ',
+    //         'da-DK',
+    //         'de-AT',
+    //         'de-CH',
+    //         'de-DE',
+    //         'de-LI',
+    //         'de-LU',
+    //         'dv-MV',
+    //         'el-GR',
+    //         'en-AU',
+    //         'en-BZ',
+    //         'en-CA',
+    //         'en-GB',
+    //         'en-IE',
+    //         'en-JM',
+    //         'en-MY',
+    //         'en-NZ',
+    //         'en-SG',
+    //         'en-TT',
+    //         'en-US',
+    //         'en-ZA',
+    //         'en-ZW',
+    //         'es-AR',
+    //         'es-BO',
+    //         'es-CL',
+    //         'es-CO',
+    //         'es-CR',
+    //         'es-DO',
+    //         'es-EC',
+    //         'es-ES',
+    //         'es-GT',
+    //         'es-HN',
+    //         'es-MX',
+    //         'es-NI',
+    //         'es-PA',
+    //         'es-PE',
+    //         'es-PR',
+    //         'es-PY',
+    //         'es-SV',
+    //         'es-US',
+    //         'es-UY',
+    //         'es-VE',
+    //         'et-EE',
+    //         'fa-IR',
+    //         'fi-FI',
+    //         'fil-PH',
+    //         'fo-FO',
+    //         'fr-BE',
+    //         'fr-CA',
+    //         'fr-CH',
+    //         'fr-FR',
+    //         'fr-LU',
+    //         'fr-MC',
+    //         'he-IL',
+    //         'hi-IN',
+    //         'hr-BA',
+    //         'hr-HR',
+    //         'hu-HU',
+    //         'hy-AM',
+    //         'id-ID',
+    //         'ig-NG',
+    //         'is-IS',
+    //         'it-CH',
+    //         'it-IT',
+    //         'ja-JP',
+    //         'ka-GE',
+    //         'kk-KZ',
+    //         'kl-GL',
+    //         'km-KH',
+    //         'ko-KR',
+    //         'ky-KG',
+    //         'lb-LU',
+    //         'lo-LA',
+    //         'lt-LT',
+    //         'lv-LV',
+    //         'mi-NZ',
+    //         'mk-MK',
+    //         'mn-MN',
+    //         'ms-BN',
+    //         'ms-MY',
+    //         'mt-MT',
+    //         'nb-NO',
+    //         'ne-NP',
+    //         'nl-BE',
+    //         'nl-NL',
+    //         'pl-PL',
+    //         'prs-AF',
+    //         'ps-AF',
+    //         'pt-BR',
+    //         'pt-PT',
+    //         'ro-RO',
+    //         'ru-RU',
+    //         'rw-RW',
+    //         'sv-SE',
+    //         'si-LK',
+    //         'sk-SK',
+    //         'sl-SI',
+    //         'sq-AL',
+    //         'sr-Cyrl-BA',
+    //         'sr-Cyrl-CS',
+    //         'sr-Cyrl-ME',
+    //         'sr-Cyrl-RS',
+    //         'sr-Latn-BA',
+    //         'sr-Latn-CS',
+    //         'sr-Latn-ME',
+    //         'sr-Latn-RS',
+    //         'sw-KE',
+    //         'tg-Cyrl-TJ',
+    //         'th-TH',
+    //         'tk-TM',
+    //         'tr-TR',
+    //         'uk-UA',
+    //         'ur-PK',
+    //         'uz-Cyrl-UZ',
+    //         'uz-Latn-UZ',
+    //         'vi-VN',
+    //         'wo-SN',
+    //         'yo-NG',
+    //         'zh-CN',
+    //         'zh-HK',
+    //         'zh-MO',
+    //         'zh-SG',
+    //         'zh-TW');
+
+    //     foreach ($locales as $locale) {
+    //         $locale_region = explode('-',$locale);
+    //         if (strtoupper($country_code) == $locale_region[1]) {
+    //             return $locale_region[0];
+    //         }
+    //     }
+
+    //     return "en";
+    // }
+
+    public static function pagination_limit()
+    {
+        $pagination_limit = BusinessSetting::where('key', 'pagination_limit')->first();
+        if ($pagination_limit != null) {
+            return $pagination_limit->value;
+        } else {
+            return 25;
+        }
+    }
+
+    public static function language_load()
+    {
+        if (\session()->has('language_settings')) {
+            $language = \session('language_settings');
+        } else {
+            $language = BusinessSetting::where('key', 'system_language')->first();
+            \session()->put('language_settings', $language);
+        }
+        return $language;
+    }
+
+
+    public static function product_tax($price , $tax, $is_include=false){
+        $price_tax = ($price * $tax) / (100 + ($is_include?$tax:0)) ;
+        return $price_tax;
     }
 }

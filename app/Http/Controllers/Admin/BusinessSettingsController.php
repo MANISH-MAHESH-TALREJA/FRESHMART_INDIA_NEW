@@ -17,9 +17,52 @@ use Illuminate\Support\Facades\Validator;
 
 class BusinessSettingsController extends Controller
 {
-    public function business_index()
+    public function business_index($tab='business')
     {
-        return view('admin-views.business-settings.business-index');
+        if(!Helpers::module_permission_check('settings')){
+            Toastr::error(translate('messages.access_denied'));
+            return back();
+        }
+        if($tab == 'business')
+        {
+            return view('admin-views.business-settings.business-index');
+        }else if($tab == 'customer')
+        {
+            $data = BusinessSetting::where('key','like','wallet_%')
+            ->orWhere('key','like','loyalty_%')
+            ->orWhere('key','like','ref_earning_%')
+            ->orWhere('key','like','ref_earning_%')->get();
+            $data = array_column($data->toArray(), 'value','key');
+            return view('admin-views.business-settings.customer-index', compact('data'));
+        }else if($tab == 'deliveryman')
+        {
+            return view('admin-views.business-settings.deliveryman-index');
+        }
+    }
+
+    public function update_dm(Request $request)
+    {
+        if (env('APP_MODE') == 'demo') {
+            Toastr::info(translate('messages.update_option_is_disable_for_demo'));
+            return back();
+        }
+        DB::table('business_settings')->updateOrInsert(['key' => 'dm_tips_status'], [
+            'value' => $request['dm_tips_status']
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['key' => 'dm_maximum_orders'], [
+            'value' => $request['dm_maximum_orders']
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['key' => 'canceled_by_deliveryman'], [
+            'value' => $request['canceled_by_deliveryman']
+        ]);
+
+        DB::table('business_settings')->updateOrInsert(['key' => 'show_dm_earning'], [
+            'value' => $request['show_dm_earning']
+        ]);
+        Toastr::success(translate('messages.successfully_updated_to_changes_restart_app'));
+        return back();
     }
 
     public function business_setup(Request $request)
@@ -70,6 +113,10 @@ class BusinessSettingsController extends Controller
             session()->forget('currency_symbol_position');
         }
 
+        DB::table('business_settings')->updateOrInsert(['key' => 'site_direction'], [
+            'value' => $request['site_direction']
+        ]);
+        
         DB::table('business_settings')->updateOrInsert(['key' => 'icon'], [
             'value' => $image_name
         ]);
@@ -112,13 +159,11 @@ class BusinessSettingsController extends Controller
         DB::table('business_settings')->updateOrInsert(['key' => 'schedule_order'], [
             'value' => $request['schedule_order']
         ]);
-
+        DB::table('business_settings')->updateOrInsert(['key' => 'tax_included'], [
+            'value' => $request['tax_included']
+        ]);
         DB::table('business_settings')->updateOrInsert(['key' => 'order_confirmation_model'], [
             'value' => $request['order_confirmation_model']
-        ]);
-
-        DB::table('business_settings')->updateOrInsert(['key' => 'dm_tips_status'], [
-            'value' => $request['dm_tips_status']
         ]);
 
         DB::table('business_settings')->updateOrInsert(['key' => 'tax'], [
@@ -149,21 +194,16 @@ class BusinessSettingsController extends Controller
             'value' => $request['free_delivery_over_status'] ? $request['free_delivery_over'] : null
         ]);
 
+        // $languages = $request['language'];
 
-        DB::table('business_settings')->updateOrInsert(['key' => 'dm_maximum_orders'], [
-            'value' => $request['dm_maximum_orders']
-        ]);
+        // if (in_array('en', $languages)) {
+        //     unset($languages[array_search('en', $languages)]);
+        // }
+        // array_unshift($languages, 'en');
 
-        $languages = $request['language'];
-
-        if (in_array('en', $languages)) {
-            unset($languages[array_search('en', $languages)]);
-        }
-        array_unshift($languages, 'en');
-
-        DB::table('business_settings')->updateOrInsert(['key' => 'language'], [
-            'value' => json_encode($languages),
-        ]);
+        // DB::table('business_settings')->updateOrInsert(['key' => 'language'], [
+        //     'value' => json_encode($languages),
+        // ]);
 
         DB::table('business_settings')->updateOrInsert(['key' => 'timeformat'], [
             'value' => $request['time_format']
@@ -171,14 +211,6 @@ class BusinessSettingsController extends Controller
 
         DB::table('business_settings')->updateOrInsert(['key' => 'canceled_by_store'], [
             'value' => $request['canceled_by_store']
-        ]);
-
-        DB::table('business_settings')->updateOrInsert(['key' => 'canceled_by_deliveryman'], [
-            'value' => $request['canceled_by_deliveryman']
-        ]);
-
-        DB::table('business_settings')->updateOrInsert(['key' => 'show_dm_earning'], [
-            'value' => $request['show_dm_earning']
         ]);
 
         DB::table('business_settings')->updateOrInsert(['key' => 'toggle_veg_non_veg'], [
@@ -1613,5 +1645,20 @@ class BusinessSettingsController extends Controller
         }
 
         return response()->json(['success' => $response_flag]);
+    }
+
+
+    public function site_direction(Request $request){
+        if($request->status == 1){
+            DB::table('business_settings')->updateOrInsert(['key' => 'site_direction'], [
+                'value' => 'ltr'
+            ]);
+        } else
+        {
+            DB::table('business_settings')->updateOrInsert(['key' => 'site_direction'], [
+                'value' => 'rtl'
+            ]);
+        }
+        return ;
     }
 }

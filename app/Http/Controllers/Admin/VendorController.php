@@ -27,6 +27,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
+use Illuminate\Support\Facades\Config;
 
 
 class VendorController extends Controller
@@ -52,7 +53,7 @@ class VendorController extends Controller
             'delivery_time_type'=>'required',
             'password' => 'required|min:6',
             'zone_id' => 'required',
-            'module_id' => 'required',
+            // 'module_id' => 'required',
             'logo' => 'required',
             'tax' => 'required'
         ], [
@@ -95,7 +96,7 @@ class VendorController extends Controller
         $store->zone_id = $request->zone_id;
         $store->tax = $request->tax;
         $store->delivery_time = $request->minimum_delivery_time .'-'. $request->maximum_delivery_time.' '.$request->delivery_time_type;
-        $store->module_id = $request->module_id;
+        $store->module_id = Config::get('module.current_module_id');
         $store->save();
         $store->module->increment('stores_count');
         if(config('module.'.$store->module->module_type)['always_open'])
@@ -279,6 +280,7 @@ class VendorController extends Controller
         ->when(is_numeric($module_id), function($query)use($request){
             return $query->module($request->query('module_id'));
         })
+        ->module(Config::get('module.current_module_id'))
         ->with('vendor','module')->type($type)->latest()->paginate(config('default_pagination'));
         $zone = is_numeric($zone_id)?Zone::findOrFail($zone_id):null;
         return view('admin-views.vendor.list', compact('stores', 'zone','type'));
@@ -320,6 +322,7 @@ class VendorController extends Controller
                 });
             });
         })
+        ->module(Config::get('module.current_module_id'))
         ->type($type)->latest()->paginate(config('default_pagination'));
         $zone = is_numeric($zone_id)?Zone::findOrFail($zone_id):null;
         return view('admin-views.vendor.pending_requests', compact('stores', 'zone','type', 'search_by'));
@@ -361,6 +364,7 @@ class VendorController extends Controller
                 });
             });
         })
+        ->module(Config::get('module.current_module_id'))
         ->type($type)->latest()->paginate(config('default_pagination'));
         $zone = is_numeric($zone_id)?Zone::findOrFail($zone_id):null;
         return view('admin-views.vendor.deny_requests', compact('stores', 'zone','type', 'search_by'));
@@ -378,6 +382,7 @@ class VendorController extends Controller
         ->when(is_numeric($module_id), function($query)use($request){
             return $query->module($request->query('module_id'));
         })
+        ->module(Config::get('module.current_module_id'))
         ->with('vendor','module')->get();
         if($request->type == 'excel'){
             return (new FastExcel(Helpers::export_stores($stores)))->download('Stores.xlsx');
@@ -408,6 +413,7 @@ class VendorController extends Controller
                 }
             });
         })
+        ->module(Config::get('module.current_module_id'))
         ->get();
         $total=$stores->count();
         return response()->json([
@@ -606,6 +612,10 @@ class VendorController extends Controller
             ->latest()
             ->paginate(config('default_pagination'));
 
+            if(!Helpers::module_permission_check('withdraw_list')){
+                return view('admin-views.wallet.withdraw-dashboard');
+            }
+
         return view('admin-views.wallet.withdraw', compact('withdraw_req'));
     }
     public function withdraw_export(Request $request)
@@ -672,12 +682,12 @@ class VendorController extends Controller
             StoreWallet::where('vendor_id', $withdraw->vendor_id)->decrement('pending_withdraw', $withdraw->amount);
             $withdraw->save();
             Toastr::success(translate('messages.seller_payment_approved'));
-            return redirect()->route('admin.store.withdraw_list');
+            return redirect()->route('admin.transactions.store.withdraw_list');
         } else if ($request->approved == 2) {
             StoreWallet::where('vendor_id', $withdraw->vendor_id)->decrement('pending_withdraw', $withdraw->amount);
             $withdraw->save();
             Toastr::info(translate('messages.seller_payment_denied'));
-            return redirect()->route('admin.store.withdraw_list');
+            return redirect()->route('admin.transactions.store.withdraw_list');
         } else {
             Toastr::error(translate('messages.not_found'));
             return back();
@@ -864,6 +874,8 @@ class VendorController extends Controller
         })
         ->when($request['type']=='id_wise', function($query)use($request){
             $query->whereBetween('id', [$request['start_id'], $request['end_id']]);
+        })->whereHas('stores', function ($q) use ($request) {
+            return $q->where('module_id', Config::get('module.current_module_id'));
         })
         ->get();
         return (new FastExcel(StoreLogic::format_export_stores($vendors)))->download('Stores.xlsx');

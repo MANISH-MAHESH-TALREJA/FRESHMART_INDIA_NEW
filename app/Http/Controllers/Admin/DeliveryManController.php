@@ -104,6 +104,24 @@ class DeliveryManController extends Controller
         ]);
     }
 
+    public function active_search(Request $request){
+        $key = explode(' ', $request['search']);
+        $delivery_men=DeliveryMan::where(function ($q) use ($key) {
+            foreach ($key as $value) {
+                $q->orWhere('f_name', 'like', "%{$value}%")
+                    ->orWhere('l_name', 'like', "%{$value}%")
+                    ->orWhere('email', 'like', "%{$value}%")
+                    ->orWhere('phone', 'like', "%{$value}%")
+                    ->orWhere('identity_number', 'like', "%{$value}%");
+            }
+        })->where('type','zone_wise')
+        ->Active()
+        ->first();
+        return response()->json([
+            'dm'=>$delivery_men
+        ]);
+    }
+
     public function reviews_list(){
         $reviews=DMReview::with(['delivery_man','customer'])->whereHas('delivery_man',function($query){
             $query->where('type','zone_wise');
@@ -187,7 +205,7 @@ class DeliveryManController extends Controller
         $dm->save();
 
         Toastr::success(translate('messages.deliveryman_added_successfully'));
-        return redirect('admin/delivery-man/list');
+        return redirect('admin/users/delivery-man/list');
     }
 
     public function edit($id)
@@ -327,7 +345,7 @@ class DeliveryManController extends Controller
             $userinfo->save();
         }
         Toastr::success(translate('messages.deliveryman_updated_successfully'));
-        return redirect('admin/delivery-man/list');
+        return redirect('admin/users/delivery-man/list');
     }
 
     public function delete(Request $request)

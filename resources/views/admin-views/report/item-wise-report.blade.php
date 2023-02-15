@@ -33,7 +33,7 @@
         <div class="card mb-20">
             <div class="card-body">
                 <h4 class="">{{translate('Search Data')}}</h4>
-                <form action="{{route('admin.report.set-date')}}" method="post">
+                <form action="{{route('admin.transactions.report.set-date')}}" method="post">
                     @csrf
                 <div class="row g-3">
                     <div class="col-sm-6 col-md-3">
@@ -112,7 +112,7 @@
         {{-- <div class="card">
             <div class="card-body">
                 <div class="report-card-inner mb-3 pt-3">
-                    <form action="{{route('admin.report.set-date')}}" method="post">
+                    <form action="{{route('admin.transactions.report.set-date')}}" method="post">
                         @csrf
                         <div class="row g-3">
                             <div class="col-md-4 col-sm-6">
@@ -194,13 +194,13 @@
                             class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-sm-right">
                             <span class="dropdown-header">{{ translate('messages.download') }}
                                 {{ translate('messages.options') }}</span>
-                            <a id="export-excel" class="dropdown-item" href="{{route('admin.report.item-wise-export', ['type'=>'excel',request()->getQueryString()])}}">
+                            <a id="export-excel" class="dropdown-item" href="{{route('admin.transactions.report.item-wise-export', ['type'=>'excel',request()->getQueryString()])}}">
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin') }}/svg/components/excel.svg"
                                     alt="Image Description">
                                 {{ translate('messages.excel') }}
                             </a>
-                            <a id="export-csv" class="dropdown-item" href="{{route('admin.report.item-wise-export', ['type'=>'csv',request()->getQueryString()])}}">
+                            <a id="export-csv" class="dropdown-item" href="{{route('admin.transactions.report.item-wise-export', ['type'=>'csv',request()->getQueryString()])}}">
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                     alt="Image Description">
@@ -255,7 +255,7 @@
                         <tr>
                             <td>{{$key+$items->firstItem()}}</td>
                             <td>
-                                <a class="media align-items-center" href="{{route('admin.item.view',[$item['id']])}}">
+                                <a class="media align-items-center" href="{{route('admin.item.view',[$item['id'],'module_id'=>$item['module_id']])}}">
                                     <img class="avatar avatar-lg mr-3" src="{{asset('storage/app/public/product')}}/{{$item['image']}}"
                                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'" alt="{{$item->name}} image">
                                     <div class="media-body">
@@ -594,7 +594,7 @@
                 }
             });
             $.post({
-                url: '{{route('admin.report.item-wise-report-search')}}',
+                url: '{{route('admin.transactions.report.item-wise-report-search')}}',
                 data: formData,
                 cache: false,
                 contentType: false,
