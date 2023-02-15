@@ -202,12 +202,12 @@
                                             </div>
                                         </a>
                                         @endforeach
-                                        @if (\App\CentralLogics\Helpers::module_permission_check('module'))
+                                        {{--@if (\App\CentralLogics\Helpers::module_permission_check('module'))
                                         <a href="{{ route('admin.business-settings.module.create') }}" class="__nav-module-item" data-toggle="tooltip"
                                         data-placement="top" title="{{ translate('add_new_module') }}">
                                             <i class="tio-add display-3"></i>
                                         </a>
-                                        @endif
+                                        @endif--}}
                                 </div>
                             </div>
                             @else
