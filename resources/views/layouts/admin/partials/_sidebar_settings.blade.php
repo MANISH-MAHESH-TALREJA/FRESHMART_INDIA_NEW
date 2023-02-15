@@ -142,7 +142,7 @@
                         {{ translate('messages.settings') }}</small>
                     <small class="tio-more-horizontal nav-subtitle-replacer"></small>
                 </li>
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/app-settings*') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/app-settings*') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.business-settings.app-settings') }}" title="{{ translate('messages.app_settings') }}">
                         <span class="tio-android nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.app_settings') }}</span>
@@ -159,7 +159,7 @@
                         <span class="tio-key nav-icon"></span>
                         <span class="text-truncate">{{ translate('messages.third_party_apis') }}</span>
                     </a>
-                </li>
+                </li>--}}
 
                 <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/pages*') ? 'active' : '' }}">
                     <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:" title="{{ translate('messages.pages') }} {{ translate('messages.setup') }}">
@@ -213,7 +213,7 @@
                     </ul>
                 </li>
 
-                <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/file-manager*') ? 'active' : '' }}">
+                {{--<li class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/file-manager*') ? 'active' : '' }}">
                     <a class="nav-link " href="{{ route('admin.business-settings.file-manager.index') }}" title="{{ translate('messages.gallery') }}">
                         <span class="tio-album nav-icon"></span>
                         <span class="text-truncate text-capitalize">{{ translate('messages.gallery') }}</span>
@@ -243,7 +243,7 @@
                             {{translate('messages.clean_database')}}
                         </span>
                     </a>
-                </li>
+                </li>--}}
                 @endif
                 <!-- End web & adpp Settings -->
 
