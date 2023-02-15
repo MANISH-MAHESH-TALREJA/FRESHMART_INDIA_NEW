@@ -116,7 +116,7 @@
                             @endif
                         </a>
                     </li>
-                    <li class="nav-item max-sm-m-0">
+                    {{--<li class="nav-item max-sm-m-0">
                         <div class="hs-unfold">
                             <div>
                                 @php( $local = session()->has('local')?session('local'):'en')
@@ -129,10 +129,10 @@
                                     @foreach(json_decode($lang['value'],true) as $data)
                                     @if($data['code']==$local)
                                     <i class="tio-globe"></i>
-                                                {{-- <img
+                                                --}}{{-- <img
                                                      width="20"
                                                      src="{{asset('public/assets/admin')}}/img/flags/{{$data['code']}}.png"
-                                                     alt="Eng"> --}}
+                                                     alt="Eng"> --}}{{--
                                                 {{$data['code']}}
                                             @endif
                                         @endforeach
@@ -143,11 +143,11 @@
                                                 <li>
                                                     <a class="dropdown-item py-1"
                                                        href="{{route('admin.lang',[$data['code']])}}">
-                                                        {{-- <img
+                                                        --}}{{-- <img
 
                                                             width="20"
                                                             src="{{asset('public/assets/admin')}}/img/flags/{{$data['code']}}.png"
-                                                            alt="{{$data['code']}}"/> --}}
+                                                            alt="{{$data['code']}}"/> --}}{{--
                                                         <span class="text-capitalize">{{$data['code']}}</span>
                                                     </a>
                                                 </li>
@@ -158,7 +158,7 @@
                                 @endif
                             </div>
                         </div>
-                    </li>
+                    </li>--}}
                     {{--@php($mod = \App\Models\Module::find(Config::get('module.current_module_id')))
                     <li class="nav-item __nav-item">
                         <a href="javascript:void(0)" class="__nav-link module--nav-icon" id="tourb-0">

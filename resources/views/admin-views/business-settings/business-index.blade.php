@@ -24,7 +24,7 @@
                             <li class="nav-item">
                                 <a class="nav-link active" href="{{ route('admin.business-settings.business-setup',  ['tab' => 'business']) }}"   aria-disabled="true">{{translate('messages.business')}} {{translate('messages.settings')}}</a>
                             </li>
-                            <li class="nav-item">
+                            {{--<li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.business-settings.business-setup',  ['tab' => 'customer']) }}"  aria-disabled="true">{{translate('messages.customers')}}</a>
                             </li>
                             <li class="nav-item">
@@ -32,7 +32,7 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ Request::is('admin/business-settings/language') ?'active':'' }}" href="{{route('admin.business-settings.language.index')}}"  aria-disabled="true">{{translate('messages.Languages')}}</a>
-                            </li>
+                            </li>--}}
                         </ul>
                         <!-- End Nav -->
                     </div>
