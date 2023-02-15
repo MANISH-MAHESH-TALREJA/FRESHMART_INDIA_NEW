@@ -38,6 +38,13 @@
                         <a href="{{ route('admin.business-settings.business-setup') }}" id="tourb-3" class="__nav-link {{ Request::is('admin/business-settings*') ? 'active' : '' }}">
                             <img src="{{asset('/public/assets/admin/img/new-img/setting-icon.svg')}}" alt="public/img">
                             <span>{{ translate('messages.Settings') }}</span>
+                        </a>
+                    </li>
+
+                    {{--<li class="nav-item __nav-item">
+                        <a href="{{ route('admin.business-settings.business-setup') }}" id="tourb-3" class="__nav-link {{ Request::is('admin/business-settings*') ? 'active' : '' }}">
+                            <img src="{{asset('/public/assets/admin/img/new-img/setting-icon.svg')}}" alt="public/img">
+                            <span>{{ translate('messages.Settings') }}</span>
                             <svg width="14" viewBox="0 0 14 14" fill="none">
                                 <path d="M2.33325 5.25L6.99992 9.91667L11.6666 5.25" stroke="#006161" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
@@ -97,7 +104,7 @@
                                 </div>
                             </div>
                         </div>
-                    </li>
+                    </li>--}}
 
                     <li class="nav-item __nav-item">
                         <a href="{{ route('admin.dispatch.dashboard')}}" id="tourb-8" class="__nav-link {{ Request::is('admin/dispatch*') ? 'active' : '' }}">
