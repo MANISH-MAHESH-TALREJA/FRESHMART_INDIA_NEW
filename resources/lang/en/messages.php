@@ -2495,4 +2495,5 @@
   'add_new_module' => 'Add new module',
   'default language can not be updated! to update change the default language first!' => 'Default language can not be updated! to update change the default language first!',
   'GROCERY' => 'GROCERY',
+  'New message arrived' => 'New message arrived',
 );
